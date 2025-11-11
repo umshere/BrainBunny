@@ -13,6 +13,9 @@ type GenerationDetails = {
   topic?: string;
   weakPoints?: string;
   imageBase64: string | null;
+  gradeLevel: string;
+  questionCount: number;
+  questionTypes: string[];
 };
 
 const getBasePrompt = (details: GenerationDetails): string => {
@@ -24,8 +27,7 @@ const getBasePrompt = (details: GenerationDetails): string => {
         if (details.imageBase64) {
             taskDescription = `
             The user has uploaded an image of a student's completed worksheet. Your first and most important task is to carefully analyze this image to identify which questions the student answered incorrectly.
-            Based on these incorrect answers, determine the student's "weak points" or areas of misunderstanding.
-            Then, generate a new worksheet with 10 questions that specifically target these weak areas to help the student practice and improve.
+            Based on these incorrect answers, determine the student's "weak points" or areas of misunderstanding. Then, generate a new worksheet that specifically targets these weak areas to help the student practice and improve.
             Do not simply copy the provided questions. Create new, similar questions that address the same underlying concepts.
             If the user has also provided text input, use it as additional context to understand the weak points.
             The manually described weak points are: "${details.weakPoints}"
@@ -33,7 +35,7 @@ const getBasePrompt = (details: GenerationDetails): string => {
         } else {
             taskDescription = `
             The user has provided a list of topics or questions the student answered incorrectly. Your task is to analyze this information to identify the student's "weak points" or areas of misunderstanding.
-            Then, generate a new worksheet with 10 questions that specifically target these weak areas to help the student practice and improve.
+            Then, generate a new worksheet that specifically targets these weak areas to help the student practice and improve.
             The incorrect questions/topics are:
             ---
             ${details.weakPoints}
@@ -44,25 +46,36 @@ const getBasePrompt = (details: GenerationDetails): string => {
     }
 
     return `
-    You are an expert elementary school teacher. Your task is to create a homework worksheet for children, formatted as a single block of clean, safe HTML. 
+    You are an expert elementary school teacher. Your task is to create a homework worksheet and a corresponding answer key for children, each formatted as a single block of clean, safe HTML.
     ${details.imageBase64 && details.mode === 'topic' ? "The user has provided an image of a sample worksheet. Use it as a strong reference for the style, difficulty, and format of the questions you generate." : ""}
-    Do not include \`<html>\`, \`<head>\`, or \`<body>\` tags. The entire response must be renderable inside a parent \`<div>\`.
-    Use Tailwind CSS classes for styling to make it look clean and professional on a standard A4 page.
+    
+    **Instructions:**
+    1.  **Grade Level:** The content must be appropriate for a ${details.gradeLevel} student.
+    2.  **Number of Questions:** The worksheet must contain exactly ${details.questionCount} questions.
+    3.  **Question Types:** The questions should be of the following types: ${details.questionTypes.join(', ')}.
+    4.  **Output Format:** You must generate TWO separate HTML blocks: the worksheet first, then the answer key.
+    5.  **Separator:** Use '---ANSWER-KEY---' as a unique and exact separator on its own line between the worksheet HTML block and the answer key HTML block.
 
     ${taskDescription}
 
-    Please generate the HTML worksheet with the following structure:
-    1.  A top-level container div. Use: \`<div class="p-8 bg-white rounded-lg shadow-lg border border-gray-200 font-serif">\`.
-    2.  A section for "Name" and "Date". Use: \`<div class="flex justify-between items-center mb-8 pb-4 border-b-2 border-gray-200"> <p class="text-lg"><strong>Name:</strong> _________________________</p> <p class="text-lg"><strong>Date:</strong> _________________________</p> </div>\`
-    3.  An \`<h2 class="text-3xl font-bold text-center text-gray-800 mb-4">\` for a clear, engaging title.
-    4.  A \`<p class="text-center text-gray-600 mb-8 italic">\` for a simple, one-sentence instruction for the student.
-    5.  An \`<ol class="list-decimal list-inside space-y-6 text-lg text-gray-700">\` with \`<li>\` tags for exactly 10 age-appropriate questions. Each question should have ample space below it for the answer (e.g., using <br> tags).
+    **Worksheet HTML Structure:**
+    -   A top-level container div: \`<div class="p-6 bg-white rounded-lg shadow-lg border border-gray-200 font-serif">\`.
+    -   An \`<h2 class="font-bold text-center text-gray-800 mb-2">\` for a clear, engaging title.
+    -   A \`<p class="text-center text-gray-600 mb-6 italic">\` for a simple, one-sentence instruction.
+    -   A section for "Name" and "Date", placed *after* the title and instructions. Use: \`<div class="flex justify-between items-center mb-6 pb-2 border-b-2 border-gray-200"> <p><strong>Name:</strong> _________________________</p> <p><strong>Date:</strong> _________________________</p> </div>\`
+    -   An \`<ol class="list-decimal list-inside text-gray-700">\` with \`<li>\` tags for the questions.
 
-    Your entire output must be only the HTML code for the worksheet. Do not include any other text, explanations, or markdown formatting like \`\`\`html.
+    **Answer Key HTML Structure:**
+    -   A top-level container div, identical to the worksheet's container.
+    -   A title: \`<h2 class="font-bold text-center text-gray-800 mb-4">Answer Key</h2>\`.
+    -   An ordered list (\`<ol>\`) that corresponds to the questions in the worksheet.
+    -   Each list item (\`<li>\`) should contain the correct answer. For complex problems (like math word problems), provide a brief, step-by-step explanation within the list item.
+
+    Your entire output must be only the HTML code. Do not include \`\`\`html, \`<html>\`, \`<head>\`, or \`<body>\` tags.
   `;
 }
 
-export async function generateHomework(details: GenerationDetails): Promise<string> {
+export async function generateHomework(details: GenerationDetails): Promise<{ worksheet: string; answerKey: string; }> {
   const model = 'gemini-2.5-flash';
   const prompt = getBasePrompt(details);
   
@@ -75,7 +88,6 @@ export async function generateHomework(details: GenerationDetails): Promise<stri
     
     if (mimeType && data) {
       const imagePart = { inlineData: { mimeType, data } };
-      // In weak_points mode, image is the primary context, so it should come first.
       requestParts.unshift(imagePart);
     }
   }
@@ -86,7 +98,19 @@ export async function generateHomework(details: GenerationDetails): Promise<stri
       contents: { parts: requestParts },
     });
     
-    return response.text.trim();
+    const responseText = response.text.trim();
+    const separator = '---ANSWER-KEY---';
+    const separatorIndex = responseText.indexOf(separator);
+
+    if (separatorIndex !== -1) {
+        const worksheet = responseText.substring(0, separatorIndex).trim();
+        const answerKey = responseText.substring(separatorIndex + separator.length).trim();
+        return { worksheet, answerKey };
+    } else {
+        // Fallback if the separator is not found
+        return { worksheet: responseText, answerKey: '<div class="p-6 bg-white rounded-lg shadow-lg border border-gray-200 font-serif"><p>Sorry, the answer key could not be generated for this worksheet.</p></div>' };
+    }
+
   } catch (error) {
     console.error("Error calling Gemini API:", error);
     throw new Error("Failed to generate content from Gemini API.");

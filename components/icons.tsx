@@ -121,3 +121,70 @@ export const XIcon = (): React.JSX.Element => (
         <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
 );
+
+export const CameraIcon = (): React.JSX.Element => (
+    <svg
+      className="w-5 h-5 text-slate-500"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+      <circle cx="12" cy="13" r="3" />
+    </svg>
+);
+
+export const KeyIcon = (): React.JSX.Element => (
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="20" 
+        height="20" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+    >
+        <circle cx="7.5" cy="15.5" r="5.5" />
+        <path d="m21 2-9.6 9.6" />
+        <path d="m15.5 8.5 3 3L22 8l-3-3" />
+    </svg>
+);
+
+export const SparklesIcon = ({ className = "w-6 h-6" }: { className?: string }): React.JSX.Element => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className={className}
+    >
+        <path fillRule="evenodd" d="M9.315 7.584C10.866 6.33 12.83 6 15 6c2.67 0 5 1.8 5 4.5 0 2.05-1.12 3.8-2.784 4.877l.012.012c.08.082.15.17.214.264.095.138.17.29.226.453.056.16.086.328.086.503 0 .71-.4 1.35-1.002 1.65a2.98 2.98 0 0 1-1.688.083 3.003 3.003 0 0 1-2.22 2.653c-.622.33-1.34.33-1.962 0a3.003 3.003 0 0 1-2.22-2.653 2.98 2.98 0 0 1-1.688-.083C5.4 18.35 5 17.71 5 17c0-.175.03-.343.086-.503.056-.163.13-.315.226-.453a4.723 4.723 0 0 1 .214-.264l.012-.012A5.513 5.513 0 0 1 3 10.5C3 8.3 4.8 6.5 7.185 6.084A3.003 3.003 0 0 1 9.315 7.584ZM15 7.5c-1.556 0-3.04.832-4.006 2.083a.75.75 0 0 0 1.212.898C12.91 9.59 13.88 9 15 9c1.657 0 3 1.119 3 2.5 0 1.258-1.02 2.304-2.42 2.473a.75.75 0 0 0-.58.727v.001c0 .414.336.75.75.75H15c2.485 0 4.5-1.79 4.5-4s-2.015-4-4.5-4Z" clipRule="evenodd" />
+        <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v.375c0 1.036.84 1.875 1.875 1.875h.375c1.036 0 1.875-.84 1.875-1.875V3.375c0-1.036-.84-1.875-1.875-1.875h-.375Z" />
+        <path d="M19.125 18c-1.036 0-1.875.84-1.875 1.875v.375c0 1.036.84 1.875 1.875 1.875h.375c1.036 0 1.875-.84 1.875-1.875v-.375c0-1.036-.84-1.875-1.875-1.875h-.375Z" />
+    </svg>
+);
+
+export const UserIcon = (): React.JSX.Element => (
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="24" 
+        height="24" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        className="text-slate-600"
+    >
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+    </svg>
+);
