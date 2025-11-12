@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { OutputView } from '../types';
-import { PrintIcon, KeyIcon } from './icons';
+import { PrinterIcon, KeyIcon } from './icons';
 
 type HomeworkOutputProps = {
     worksheet: string;
@@ -27,7 +27,7 @@ export const HomeworkOutput = ({ worksheet, answerKey, onPrint }: HomeworkOutput
             
             <div className="mt-8 text-center no-print flex justify-center items-center space-x-4">
                 <button onClick={() => onPrint(worksheet)} className="inline-flex items-center bg-slate-700 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                    <PrintIcon />
+                    <PrinterIcon />
                     <span className="ml-2">Print Sheet</span>
                 </button>
                 {answerKey && (

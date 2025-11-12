@@ -1,22 +1,22 @@
 import React, { useState, useCallback } from 'react';
 import { Topic } from '../types';
 import { 
-    DinosaurIcon, CompassIcon, CastleIcon, PlantIcon, TrainIcon, DetectiveIcon, MagicWandIcon, 
-    PizzaIcon, PlanetIcon, LoaderIcon, LightbulbIcon, QuestionMarkIcon, HistoryIcon, ArtIcon, BrainIcon 
+    AcademicCapIcon, BeakerIcon, BuildingLibraryIcon, CalculatorIcon, ChatBubbleLeftEllipsisIcon, PaintBrushIcon, 
+    PuzzlePieceIcon, QuestionMarkCircleIcon, ArrowPathIcon 
 } from './icons';
 import { generateLibraryTopics } from '../services/geminiService';
 
 const GRADE_LEVELS = ["Kindergarten", "1st Grade", "2nd Grade", "3rd Grade", "4th Grade", "5th Grade", "6th Grade", "7th Grade", "8th Grade"];
 
 const categoryIcons: { [key: string]: React.JSX.Element } = {
-    'Math': <MagicWandIcon />,
-    'Science': <PlantIcon />,
-    'History': <HistoryIcon />,
-    'Language': <CastleIcon />,
-    'Art': <ArtIcon />,
-    'Trivia': <LightbulbIcon />,
-    'Logic': <BrainIcon />,
-    'Default': <QuestionMarkIcon />,
+    'Math': <CalculatorIcon />,
+    'Science': <BeakerIcon />,
+    'History': <BuildingLibraryIcon />,
+    'Language': <ChatBubbleLeftEllipsisIcon />,
+    'Art': <PaintBrushIcon />,
+    'Trivia': <QuestionMarkCircleIcon />,
+    'Logic': <PuzzlePieceIcon />,
+    'Default': <AcademicCapIcon />,
 };
 
 const getIconForCategory = (category: string) => {
@@ -79,7 +79,7 @@ export const WorksheetLibrary = ({ onTopicSelect }: WorksheetLibraryProps) => {
                             <div className="p-4 bg-slate-50/50 rounded-b-lg border border-t-0 border-slate-200">
                                 {isLoading[grade] && (
                                     <div className="flex items-center justify-center p-8">
-                                        <LoaderIcon />
+                                        <ArrowPathIcon className="w-6 h-6 animate-spin" />
                                         <span className="ml-2 text-slate-500">Generating fresh ideas...</span>
                                     </div>
                                 )}

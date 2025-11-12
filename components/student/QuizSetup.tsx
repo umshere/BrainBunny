@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MagicWandIcon, SparklesIcon } from '../icons';
+import { SparklesIcon } from '../icons';
 
 const GRADE_LEVELS = ["Kindergarten", "1st Grade", "2nd Grade", "3rd Grade", "4th Grade", "5th Grade", "6th Grade", "7th Grade", "8th Grade"];
 const DIFFICULTIES = ['Easy', 'Medium', 'Hard'] as const;
@@ -80,7 +80,7 @@ export const QuizSetup = ({ onStart, error }: QuizSetupProps) => {
                         disabled={!topic.trim()}
                         className="w-full inline-flex items-center justify-center bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-lg"
                     >
-                        <MagicWandIcon /><span className="ml-2">Start Quiz</span>
+                        <SparklesIcon className="w-6 h-6" /><span className="ml-2">Start Quiz</span>
                     </button>
                     
                      <button

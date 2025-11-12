@@ -4,7 +4,7 @@ import { generateQuizQuestions } from '../../services/geminiService';
 import { QuizSetup } from './QuizSetup';
 import { QuizGame } from './QuizGame';
 import { QuizResults } from './QuizResults';
-import { LoaderIcon, BrainyBunnyIcon } from '../icons';
+import { CoffeeBrewerIcon, BrainyBunnyIcon } from '../icons';
 
 type QuizState = 'setup' | 'loading' | 'playing' | 'results';
 type QuizSettings = {
@@ -90,7 +90,7 @@ export const StudentZone = ({ onExit }: { onExit: () => void; }) => {
             case 'loading':
                 return (
                     <div className="text-center">
-                        <LoaderIcon />
+                        <CoffeeBrewerIcon className="w-32 h-32 mx-auto" />
                         <h2 className="text-2xl font-bold text-slate-700 mt-4">Brewing up some questions...</h2>
                         <p className="text-slate-500">This might take a moment!</p>
                     </div>

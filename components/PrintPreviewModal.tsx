@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PageSize } from '../types';
-import { XIcon, PrintIcon } from './icons';
+import { XMarkIcon, PrinterIcon } from './icons';
 
 type PrintPreviewModalProps = {
     isOpen: boolean;
@@ -108,7 +108,7 @@ export const PrintPreviewModal = ({ isOpen, onClose, content }: PrintPreviewModa
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-full max-h-[90vh] flex flex-col">
                 <div className="p-4 border-b flex justify-between items-center bg-slate-50 rounded-t-2xl">
                     <h3 className="text-lg font-bold text-slate-800">Print Preview & Settings</h3>
-                    <button onClick={onClose} className="text-slate-500 hover:text-slate-800"><XIcon /></button>
+                    <button onClick={onClose} className="text-slate-500 hover:text-slate-800"><XMarkIcon /></button>
                 </div>
                 <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
                     <div className="w-full md:w-1/3 lg:w-1/4 p-4 md:p-6 space-y-4 md:space-y-6 overflow-y-auto bg-slate-100 border-b md:border-r md:border-b-0">
@@ -162,7 +162,7 @@ export const PrintPreviewModal = ({ isOpen, onClose, content }: PrintPreviewModa
                 </div>
                 <div className="p-4 border-t flex justify-end bg-slate-50 rounded-b-2xl">
                     <button onClick={handleActualPrint} className="inline-flex items-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                        <PrintIcon /><span className="ml-2">Print Now</span>
+                        <PrinterIcon /><span className="ml-2">Print Now</span>
                     </button>
                 </div>
             </div>

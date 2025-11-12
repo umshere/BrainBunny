@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { GenerationMode, PageSize } from '../types';
-import { MagicWandIcon, LoaderIcon, MicrophoneIcon, UploadIcon, XIcon, CameraIcon, PaintBrushIcon, DropletIcon, MinimalIcon, DocumentIcon, SparklesIcon } from './icons';
+import { SparklesIcon, ArrowPathIcon, MicrophoneIcon, ArrowUpTrayIcon, XMarkIcon, CameraIcon, PaintBrushIcon, EyeDropperIcon, Bars3BottomLeftIcon, DocumentIcon } from './icons';
 import { WorksheetLibrary } from './WorksheetLibrary';
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -157,11 +157,11 @@ export const GeneratorForm = (props: GeneratorFormProps) => {
                     className="w-full sm:w-auto inline-flex items-center justify-center bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                   >
                     {isLoading ? (
-                      <><LoaderIcon /><span className="ml-2">Generating...</span></>
+                      <><ArrowPathIcon className="w-6 h-6 animate-spin" /><span className="ml-2">Generating...</span></>
                     ) : isAnalyzingImage ? (
-                      <><LoaderIcon /><span className="ml-2">Analyzing...</span></>
+                      <><ArrowPathIcon className="w-6 h-6 animate-spin" /><span className="ml-2">Analyzing...</span></>
                     ) : (
-                      <><MagicWandIcon /><span className="ml-2">Generate Homework</span></>
+                      <><SparklesIcon className="w-6 h-6" /><span className="ml-2">Generate Homework</span></>
                     )}
                   </button>
                 </div>
@@ -200,7 +200,7 @@ const GenerationSettings = ({ gradeLevel, setGradeLevel, questionCount, setQuest
 
 const ThemeSelector = ({ theme, setTheme }: any) => {
     const themeIcons: { [key: string]: React.JSX.Element } = {
-        "Default": <DocumentIcon />, "Minimal": <MinimalIcon />, "Ink Saver": <DropletIcon />, "Illustrated": <PaintBrushIcon />
+        "Default": <DocumentIcon />, "Minimal": <Bars3BottomLeftIcon />, "Ink Saver": <EyeDropperIcon />, "Illustrated": <PaintBrushIcon />
     };
     return (
         <div className="pt-4">
@@ -241,7 +241,7 @@ const UploadArea = ({ fileInputRef, image, removeImage, isAnalyzingImage, analys
                 <>
                     <img src={image} alt="Uploaded worksheet preview" className="w-full h-full object-contain rounded-lg" />
                     <button onClick={removeImage} className="absolute top-2 right-2 bg-slate-800/60 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors" aria-label="Remove image">
-                        <XIcon />
+                        <XMarkIcon />
                     </button>
                 </>
             ) : (
@@ -254,14 +254,14 @@ const UploadArea = ({ fileInputRef, image, removeImage, isAnalyzingImage, analys
 
 const AnalysisLoader = ({ message }: { message: string }) => (
     <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-sm flex flex-col items-center justify-center text-center p-4">
-        <LoaderIcon />
+        <ArrowPathIcon className="animate-spin w-8 h-8 text-slate-700" />
         <p className="mt-2 text-sm text-slate-600 font-semibold animate-pulse">{message}</p>
     </div>
 );
 
 const UploadPlaceholder = ({ onOpenCamera }: { onOpenCamera: (e: React.MouseEvent) => void }) => (
     <div className="flex flex-col items-center justify-center text-center">
-        <UploadIcon />
+        <ArrowUpTrayIcon className="w-8 h-8 mb-4 text-slate-500" />
         <p className="mb-2 text-sm text-slate-500"><span className="font-semibold">Click to upload</span></p>
         <p className="text-xs text-slate-500">PNG, JPG or GIF</p>
         {!isMobile && (

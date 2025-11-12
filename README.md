@@ -6,6 +6,7 @@ BrainyBunny.ai is a powerful and intuitive application designed to help parents 
 
 - **Generate from Topic:** Create worksheets on any subject (e.g., "The Water Cycle," "Simple Addition").
 - **Target Weak Points:** Upload an image of a completed worksheet, and the AI will identify mistakes and create a new sheet to practice those specific skills.
+- **Interactive Student Zone:** A fun, game-like quiz mode for kids to test their knowledge. Features include difficulty levels, a "level-up" progression system, and lives. Incorrect answers are saved as "weak spots" for parents to create targeted practice worksheets.
 - **Customizable Worksheets:**
     - Select Grade Levels (Kindergarten - 8th Grade)
     - Specify the exact Number of Questions
@@ -55,9 +56,9 @@ This roadmap outlines the future vision for BrainyBunny.ai, transforming it into
 *This phase requires a backend and database to store user data and enable long-term tracking.*
 
 - **User Modes & Profiles:**
-    - **[ ] Guest Mode:** The current default, no history saved.
-    - **[ ] Parent/Teacher Mode:** Manage profiles for one or more students.
-    - **[ ] Student Mode:** A simplified, motivational UI for the child.
+    - **[x] Guest Mode:** The current default, no history saved.
+    - **[x] Parent/Teacher Mode:** Manage profiles for one or more students.
+    - **[x] Student Mode:** A simplified, motivational UI for the child.
     - **[ ] Student Avatars & Profiles:** Let kids choose a fun avatar (bunny, robot, dinosaur) for their profile.
 - **Progress Tracking Dashboard:**
     - **[ ] Worksheet History:** View all past worksheets by date and topic.
@@ -71,7 +72,7 @@ This roadmap outlines the future vision for BrainyBunny.ai, transforming it into
 *The long-term vision to make BrainyBunny a collaborative tool for educators and parents.*
 
 - **Motivation & Reward Layer (Gamification):**
-    - **[ ] XP/Star System:** Award points for completing worksheets.
+    - **[x] XP/Star System:** Award points for completing worksheets.
     - **[ ] Daily Streaks:** Encourage consistent practice with a streak badge.
     - **[ ] Unlockable Content:** Use points to unlock new worksheet themes or avatars.
     - **[ ] Fun Finishers:** Add a "Great Job!" mini-coloring doodle at the bottom of a completed worksheet.

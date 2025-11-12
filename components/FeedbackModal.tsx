@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { XIcon, MicrophoneIcon } from './icons';
+import { XMarkIcon, MicrophoneIcon } from './icons';
 
 type FeedbackModalProps = {
     isOpen: boolean;
@@ -70,7 +70,7 @@ export const FeedbackModal = ({ isOpen, onClose }: FeedbackModalProps) => {
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col relative">
                 <div className="p-4 border-b flex justify-between items-center bg-slate-50 rounded-t-2xl">
                     <h3 className="text-lg font-bold text-slate-800">Share Your Feedback</h3>
-                    <button onClick={onClose} className="text-slate-500 hover:text-slate-800"><XIcon /></button>
+                    <button onClick={onClose} className="text-slate-500 hover:text-slate-800"><XMarkIcon /></button>
                 </div>
                 
                 <div className="p-6 space-y-4">

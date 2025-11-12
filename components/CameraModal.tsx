@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { XIcon } from './icons';
+import { XMarkIcon } from './icons';
 
 type CameraModalProps = {
     isOpen: boolean;
@@ -54,7 +54,7 @@ export const CameraModal = ({ isOpen, onClose, onUsePicture }: CameraModalProps)
             <div className="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col relative">
                 <div className="absolute top-0 right-0 p-2 z-10">
                     <button onClick={onClose} className="text-slate-400 hover:text-white bg-slate-700/50 rounded-full p-2">
-                        <XIcon />
+                        <XMarkIcon className="w-6 h-6" />
                     </button>
                 </div>
 

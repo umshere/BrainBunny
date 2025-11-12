@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { BrainyBunnyIcon, MagicWandIcon, TargetIcon, SettingsIcon, PrintIcon, SparklesIcon } from './icons';
+import { BrainyBunnyIcon, SparklesIcon, CrosshairsIcon, AcademicCapIcon, ClipboardDocumentCheckIcon } from './icons';
 
 const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
@@ -61,24 +61,24 @@ export const WelcomeScreen = ({ onGoogleLoginClick, onGuestMode, onStudentMode }
                 <h2 className="text-3xl font-bold text-slate-800 text-center mb-10">How BrainyBunny Helps You</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <FeatureCard
-                        icon={<MagicWandIcon />}
-                        title="Instant Generation"
-                        description="Create worksheets on any topic from math to science, perfectly tailored to your chosen grade level."
+                        icon={<SparklesIcon />}
+                        title="Custom Generation"
+                        description="Instantly create worksheets on any topic, tailored by grade, question types, themes, and more."
                     />
                     <FeatureCard
-                        icon={<TargetIcon />}
+                        icon={<CrosshairsIcon />}
                         title="Targeted Practice"
-                        description="Upload a photo of completed homework to identify weak spots and generate practice questions."
+                        description="Upload homework to find weak spots and create worksheets that help students improve right where they need it."
                     />
                     <FeatureCard
-                        icon={<SettingsIcon />}
-                        title="Total Customization"
-                        description="Choose question types, worksheet themes, and the exact number of problems you need."
+                        icon={<AcademicCapIcon />}
+                        title="Fun Student Zone"
+                        description="An interactive quiz game for kids with levels, lives, and encouraging feedback to make learning fun."
                     />
                     <FeatureCard
-                        icon={<PrintIcon />}
-                        title="Perfectly Printable"
-                        description="Fine-tune margins, font size, and spacing for a flawless printout on any device, every time."
+                        icon={<ClipboardDocumentCheckIcon />}
+                        title="Printable & Ready"
+                        description="Fine-tune margins, font size, and spacing for a flawless, print-ready worksheet every time."
                     />
                 </div>
             </div>

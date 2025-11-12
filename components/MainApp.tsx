@@ -8,7 +8,8 @@ import { PrintPreviewModal } from './PrintPreviewModal';
 import { CameraModal } from './CameraModal';
 import { ComingSoon } from './ComingSoon';
 import { FeedbackModal } from './FeedbackModal';
-import { FeedbackIcon } from './icons';
+// Fix: Corrected typo in icon import name.
+import { ChatBubbleLeftEllipsisIcon } from './icons';
 
 const ANALYSIS_MESSAGES = [
     "Analyzing worksheet image...",
@@ -334,7 +335,7 @@ export const MainApp = () => {
         className="fixed bottom-6 right-6 bg-amber-500 hover:bg-amber-600 text-white font-bold p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-20"
         aria-label="Share Feedback"
       >
-        <FeedbackIcon />
+        <ChatBubbleLeftEllipsisIcon />
       </button>
     </>
   );
