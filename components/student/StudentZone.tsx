@@ -1,126 +1,154 @@
 import React, { useState } from 'react';
-import { QuizQuestion } from '../../types';
+import { StudentProfile, QuizSettings, Assignment } from '../../types';
 import { generateQuizQuestions } from '../../services/geminiService';
 import { QuizSetup } from './QuizSetup';
+import { VoiceQuizGame } from './VoiceQuizGame';
 import { QuizGame } from './QuizGame';
-import { QuizResults } from './QuizResults';
-import { CoffeeBrewerIcon, BrainyBunnyIcon } from '../icons';
+import { ClockIcon, CheckCircleIcon, SparklesIcon } from '../icons';
+import { Header } from '../Header';
+import { useUser } from '../../contexts/UserContext';
 
-type QuizState = 'setup' | 'loading' | 'playing' | 'results';
-type QuizSettings = {
-    gradeLevel: string;
-    topic: string;
-    difficulty: 'Easy' | 'Medium' | 'Hard';
+type StudentZoneProps = {
+    student: StudentProfile;
+    onSwitchToParent: () => void;
+    onSwitchProfile: () => void;
 };
 
-const WEAK_SPOTS_KEY = 'brainyBunnyWeakSpots';
+type View = 'dashboard' | 'setup' | 'quiz' | 'voice_quiz';
 
-export const StudentZone = ({ onExit }: { onExit: () => void; }) => {
-    const [quizState, setQuizState] = useState<QuizState>('setup');
-    const [quizSettings, setQuizSettings] = useState<QuizSettings | null>(null);
-    const [questions, setQuestions] = useState<QuizQuestion[]>([]);
-    const [score, setScore] = useState(0);
-    const [level, setLevel] = useState(1);
-    const [levelPassed, setLevelPassed] = useState(false);
+export const StudentZone = ({ student, onSwitchToParent, onSwitchProfile }: StudentZoneProps) => {
+    const { session } = useUser();
+    const [view, setView] = useState<View>('dashboard');
     const [error, setError] = useState<string | null>(null);
+    const [activeAssignment, setActiveAssignment] = useState<Assignment | null>(null);
+    const [quizSettings, setQuizSettings] = useState<QuizSettings | null>(null);
 
-    const handleAddWeakSpot = (questionText: string) => {
-        try {
-            const stored = localStorage.getItem(WEAK_SPOTS_KEY);
-            const existingSpots: string[] = stored ? JSON.parse(stored) : [];
-            const newSpots = new Set([...existingSpots, questionText]);
-            localStorage.setItem(WEAK_SPOTS_KEY, JSON.stringify(Array.from(newSpots)));
-        } catch (e) {
-            console.error("Failed to save weak spot:", e);
-        }
-    };
-
-    const fetchQuestions = async (currentLevel: number) => {
-        if (!quizSettings) return;
-        setQuizState('loading');
-        setError(null);
-        try {
-            const generatedQuestions = await generateQuizQuestions(quizSettings.gradeLevel, quizSettings.topic, quizSettings.difficulty, currentLevel);
-            if (generatedQuestions && generatedQuestions.length > 0) {
-                setQuestions(generatedQuestions);
-                setScore(0);
-                setQuizState('playing');
-            } else {
-                setError("Sorry, I couldn't create a quiz for that topic. Please try another one!");
-                setQuizState('setup');
-            }
-        } catch (e) {
-            console.error(e);
-            setError("Oh no! Something went wrong while creating the quiz. Please try again.");
-            setQuizState('setup');
-        }
-    };
+    const pendingAssignments = student.assignments.filter(a => a.status === 'pending');
+    const completedAssignments = student.assignments.filter(a => a.status === 'completed');
 
     const handleStartQuiz = async (settings: QuizSettings) => {
-        setQuizSettings(settings);
-        setLevel(1);
-        await fetchQuestions(1);
-    };
-
-    const handleQuizEnd = (finalScore: number) => {
-        setScore(finalScore);
-        const passed = finalScore / questions.length >= 0.7; // Pass if 70% or more
-        setLevelPassed(passed);
-        if (passed) {
-            setLevel(prev => prev + 1);
+        setError(null);
+        if (settings.mode === 'voice') {
+            setQuizSettings(settings);
+            setView('voice_quiz');
+            return;
         }
-        setQuizState('results');
+
+        try {
+            // FIX: The generateQuizQuestions function expects a single GenerationDetails-like object.
+            const questions = await generateQuizQuestions({
+                gradeLevel: settings.gradeLevel,
+                topic: settings.topic,
+                numQuestions: 5, // A reasonable number for a practice quiz
+                worksheetType: "Multiple Choice",
+                subject: "Practice",
+                includeAnswerKey: false,
+                customInstructions: `The quiz difficulty should be ${settings.difficulty}.`
+            });
+            const tempAssignment: Assignment = { 
+                ...settings, 
+                questions, 
+                id: `temp_${Date.now()}`, 
+                status: 'pending', 
+                dateAssigned: new Date().toISOString() 
+            };
+            setActiveAssignment(tempAssignment);
+            setView('quiz');
+        } catch (e: any) {
+            setError(e.message || "Failed to create quiz.");
+            setView('setup');
+        }
     };
     
-    const handleNextLevel = () => {
-        fetchQuestions(level);
+    const startAssignment = (assignment: Assignment) => {
+        setActiveAssignment(assignment);
+        setView('quiz');
+    };
+
+    const handleEndQuiz = () => {
+        setView('dashboard');
+        setActiveAssignment(null);
+        setQuizSettings(null);
+    };
+
+    if (view === 'setup') {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-sky-100 to-purple-100 flex items-center justify-center p-4">
+                <QuizSetup onStart={handleStartQuiz} error={error} onBack={() => setView('dashboard')} />
+            </div>
+        );
     }
 
-    const handleNewQuiz = () => {
-        setQuizState('setup');
-        setQuestions([]);
-        setQuizSettings(null);
-        setError(null);
-    };
-
-    const renderContent = () => {
-        switch (quizState) {
-            case 'setup':
-                return <QuizSetup onStart={handleStartQuiz} error={error} />;
-            case 'loading':
-                return (
-                    <div className="text-center">
-                        <CoffeeBrewerIcon className="w-32 h-32 mx-auto" />
-                        <h2 className="text-2xl font-bold text-slate-700 mt-4">Brewing up some questions...</h2>
-                        <p className="text-slate-500">This might take a moment!</p>
-                    </div>
-                );
-            case 'playing':
-                return <QuizGame questions={questions} onEnd={handleQuizEnd} topic={quizSettings?.topic || ''} level={level} onAddWeakSpot={handleAddWeakSpot} />;
-            case 'results':
-                return <QuizResults score={score} totalQuestions={questions.length} onNextLevel={handleNextLevel} onNewQuiz={handleNewQuiz} passed={levelPassed} level={level} />;
-            default:
-                return <QuizSetup onStart={handleStartQuiz} error={error} />;
-        }
-    };
+    if (view === 'quiz' && activeAssignment) {
+        return <QuizGame assignment={activeAssignment} onEnd={handleEndQuiz} />;
+    }
+    
+    if (view === 'voice_quiz' && quizSettings) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-sky-100 to-purple-100 flex items-center justify-center p-4">
+                <VoiceQuizGame settings={quizSettings} onEnd={handleEndQuiz} />
+            </div>
+        );
+    }
 
     return (
-        <div className="flex flex-col min-h-screen bg-sky-100">
-             <header className="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-10 no-print">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center space-x-2">
-                            <BrainyBunnyIcon className="w-8 h-8 text-sky-500" />
-                            <h1 className="text-2xl font-bold text-slate-800">
-                                Student Zone
-                            </h1>
+        <div className="flex flex-col min-h-screen">
+             <Header
+                user={session.user}
+                activeStudent={student}
+                currentView="student"
+                onSwitchToParent={onSwitchToParent}
+                onSwitchToStudent={() => {}}
+                onSwitchProfile={onSwitchProfile}
+            />
+            <main className="flex-grow bg-slate-50">
+                <div className="max-w-4xl mx-auto p-4 md:p-6">
+                    <h2 className="text-3xl font-bold text-slate-800 mb-2">Welcome back, {student.name}! {student.avatar}</h2>
+                    <p className="text-slate-500 mb-8">Ready to learn something new today?</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
+                            <h3 className="text-xl font-bold text-slate-800 flex items-center mb-4"><ClockIcon className="w-6 h-6 mr-2 text-amber-500" /> Pending Assignments</h3>
+                            {pendingAssignments.length > 0 ? (
+                                <ul className="space-y-3">
+                                    {pendingAssignments.map(a => (
+                                        <li key={a.id} className="p-3 bg-amber-50 rounded-lg flex justify-between items-center">
+                                            <div>
+                                                <p className="font-semibold text-slate-800">{a.topic}</p>
+                                                <p className="text-sm text-slate-500">{a.difficulty} &middot; {a.questions.length} questions</p>
+                                            </div>
+                                            <button onClick={() => startAssignment(a)} className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg transition">Start</button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-slate-500 text-center py-4">All caught up! No pending assignments.</p>
+                            )}
+                            <button onClick={() => setView('setup')} className="mt-6 w-full flex items-center justify-center bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-lg transition shadow">
+                                <SparklesIcon className="w-5 h-5 mr-2" /> Start a New Practice Quiz
+                            </button>
                         </div>
-                        <button onClick={onExit} className="text-sm font-medium text-slate-600 hover:text-slate-800 bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-lg">Exit</button>
+                        
+                        <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
+                             <h3 className="text-xl font-bold text-slate-800 flex items-center mb-4"><CheckCircleIcon className="w-6 h-6 mr-2 text-green-500" /> Completed Work</h3>
+                             {completedAssignments.length > 0 ? (
+                                <ul className="space-y-3">
+                                    {completedAssignments.map(a => (
+                                        <li key={a.id} className="p-3 bg-green-50 rounded-lg flex justify-between items-center opacity-80">
+                                            <div>
+                                                <p className="font-semibold text-slate-700">{a.topic}</p>
+                                                <p className="text-sm text-slate-500">{a.difficulty} &middot; {a.questions.length} questions</p>
+                                            </div>
+                                            <p className="font-bold text-green-700">Score: {a.score}/{a.questions.length}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-slate-500 text-center py-4">No quizzes completed yet. Let's get started!</p>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </header>
-            <main className="flex-1 flex flex-col items-center justify-center p-4">
-                {renderContent()}
             </main>
         </div>
     );

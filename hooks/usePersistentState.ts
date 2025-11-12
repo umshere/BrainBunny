@@ -1,4 +1,3 @@
-// Fix: Import React to bring the React namespace into scope for types like React.Dispatch.
 import React, { useState, useEffect } from 'react';
 
 // Custom hook for persisting state to localStorage

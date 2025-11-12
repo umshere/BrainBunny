@@ -113,7 +113,7 @@ export const CrosshairsIcon = ({ className = "w-6 h-6" }: { className?: string }
 
 export const Cog6ToothIcon = ({ className = "w-6 h-6" }: { className?: string }): React.JSX.Element => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.26.716.53 1.003l.828.828c.329.329.329.86 0 1.19l-.828.828c-.27.287-.467.629-.53 1.003l-.213 1.281c-.09.543-.56.94-1.11.94h-2.593c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.26-.716-.53-1.003l-.828-.828c-.329.329-.329.86 0-1.19l.828-.828c.27-.287.467.629.53-1.003l.213-1.281Z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.26.716.53 1.003l.828.828c.329.329.329.86 0 1.19l-.828.828c-.27.287-.467.629-.53 1.003l-.213 1.281c-.09.543-.56.94-1.11.94h-2.593c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.26-.716-.53-1.003l-.828-.828c-.329.329-.329.86 0-1.19l.828.828c.27-.287.467.629.53-1.003l.213-1.281Z" />
     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
   </svg>
 );
@@ -185,6 +185,38 @@ export const MagnifyingGlassIcon = ({ className = "w-6 h-6" }: { className?: str
     <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
   </svg>
 );
+
+export const ChatBubbleLeftRightIcon = ({ className = "w-6 h-6" }: { className?: string }): React.JSX.Element => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193l-3.72.35c-1.063.1-2.062.624-2.88 1.434l-1.493 1.493a.98 1.05 0 0 1-1.486 0l-1.493-1.493c-.818-.81-.182-1.334-2.88-1.434l-3.72-.35c-1.133-.1-1.98-1.057-1.98-2.193V10.608c0-.97.616-1.813 1.5-2.097m14.25 0A9.996 9.996 0 0 0 12 3.75a9.996 9.996 0 0 0-8.25 4.761" />
+  </svg>
+);
+
+export const ArrowRightOnRectangleIcon = ({ className = "w-6 h-6" }: { className?: string }): React.JSX.Element => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+  </svg>
+);
+
+// FIX: Add missing ArrowUturnLeftIcon for the review screen's 'Back' button.
+export const ArrowUturnLeftIcon = ({ className = "w-6 h-6" }: { className?: string }): React.JSX.Element => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+    </svg>
+);
+
+export const PencilIcon = ({ className = "w-6 h-6" }: { className?: string }): React.JSX.Element => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+    </svg>
+);
+
+export const AdjustmentsHorizontalIcon = ({ className = "w-6 h-6" }: { className?: string }): React.JSX.Element => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+    </svg>
+);
+
 
 // --- Solid/Stateful Icons (Heroicons) ---
 
