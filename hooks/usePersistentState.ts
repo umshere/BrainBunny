@@ -1,0 +1,25 @@
+// Fix: Import React to bring the React namespace into scope for types like React.Dispatch.
+import React, { useState, useEffect } from 'react';
+
+// Custom hook for persisting state to localStorage
+export function usePersistentState<T>(key: string, initialState: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+    const [state, setState] = useState<T>(() => {
+        try {
+            const storedValue = window.localStorage.getItem(key);
+            return storedValue ? JSON.parse(storedValue) : initialState;
+        } catch (error) {
+            console.error(error);
+            return initialState;
+        }
+    });
+
+    useEffect(() => {
+        try {
+            window.localStorage.setItem(key, JSON.stringify(state));
+        } catch (error) {
+            console.error(error);
+        }
+    }, [key, state]);
+
+    return [state, setState];
+}
