@@ -1,148 +1,159 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { QuizQuestion, Topic, GenerationDetails } from "../types";
+import { QuizQuestion, GenerationDetails, Topic } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Initialize the Google GenAI client
+// The API key is automatically sourced from the process.env.API_KEY environment variable.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
-// Step 2 of the new flow: Format approved questions into a printable worksheet
-export const formatWorksheetFromQuestions = async (
-  questions: QuizQuestion[],
-  details: GenerationDetails
-): Promise<{ worksheet: string; answerKey: string }> => {
-  try {
-    const model = 'gemini-2.5-pro';
-    
-    const questionsString = questions.map((q, i) => 
-        `${i + 1}. ${q.question}\nOptions: ${q.options ? q.options.join(', ') : 'N/A'}`
-    ).join('\n\n');
-
-    const prompt = `
-      You are an expert educator and designer creating a printable worksheet for a child.
-      Your task is to format the following pre-generated questions into a visually appealing and age-appropriate worksheet using HTML and Tailwind CSS.
-
-      **Worksheet Details:**
-      - **Grade Level:** ${details.gradeLevel}
-      - **Topic:** ${details.topic}
-      - **Worksheet Type:** ${details.worksheetType}
-      - **Custom Instructions:** ${details.customInstructions || "None"}
-
-      **Questions to Format:**
-      \`\`\`
-      ${questionsString}
-      \`\`\`
-
-      **Formatting Rules:**
-      1.  **Main Container:** The entire output MUST be enclosed in a single \`<div class="worksheet-container p-8 font-sans">\` tag.
-      2.  **Text Color:** ALL text (headings, questions, options, etc.) MUST have a dark text color class, like \`text-slate-800\` or \`text-gray-700\`. This is critical for visibility on a white background.
-      3.  **Styling:** Use Tailwind CSS classes for all styling. No inline styles or \`<style>\` blocks.
-      4.  **Worksheet Header:**
-          - Create a fun, engaging title using \`<h1 class="text-3xl font-bold text-slate-800 mb-2 text-center">\`.
-          - Include "Name: __________" and "Date: __________" fields using \`<div class="flex justify-between mb-6 text-lg text-slate-700">\`.
-      5.  **Questions:**
-          - Each question should be in its own container, like \`<div class="mb-6">\`.
-          - Number questions clearly (e.g., \`<p class="font-bold text-slate-800">\`).
-          - For multiple choice, use a list format (\`<ul>\`, \`<li>\`) with clear labels (A, B, C, D).
-          - For fill-in-the-blank, create visible underlined spaces.
-      6.  **Visuals:** Add 1-2 simple, relevant SVG icons within the worksheet to make it visually appealing. Use Tailwind classes for sizing (e.g., 'w-16 h-16 mx-auto').
-      7.  **Answer Key Separator:** You MUST separate the worksheet from the answer key using the exact HTML comment: \`<!-- ANSWER_KEY_SEPARATOR -->\`.
-      8.  **Answer Key Formatting:**
-          - The answer key should start with \`<h2 class="text-2xl font-bold mt-8 mb-4 border-t pt-4 text-slate-800">Answer Key</h2>\`.
-          - List the answers clearly, corresponding to the question numbers.
-
-      Generate the complete HTML now based on these rules.
-    `;
-
-    const response = await ai.models.generateContent({
-      model: model,
-      contents: prompt,
-    });
-    
-    const fullContent = response.text;
-    
-    if (details.includeAnswerKey && fullContent.includes('<!-- ANSWER_KEY_SEPARATOR -->')) {
-      const parts = fullContent.split('<!-- ANSWER_KEY_SEPARATOR -->');
-      return { worksheet: parts[0], answerKey: parts[1] };
-    } else {
-      return { worksheet: fullContent, answerKey: '' };
-    }
-
-  } catch (error) {
-    console.error("Error formatting worksheet:", error);
-    throw new Error("Failed to format worksheet. The AI might be busy, please try again.");
-  }
-};
-
-
-// Step 1 of the new flow: Generate structured JSON questions quickly.
-export const generateQuizQuestions = async (
-  details: GenerationDetails
-): Promise<QuizQuestion[]> => {
-  try {
-    const model = 'gemini-2.5-flash';
-
-    const prompt = `
-      You are an expert in creating educational content for children.
-      Generate ${details.numQuestions} quiz question(s) for a ${details.gradeLevel} student on the topic of "${details.topic}".
-      The desired worksheet type is "${details.worksheetType}".
-      Adhere to any custom instructions: "${details.customInstructions || 'None'}".
-
-      For each question, you MUST provide the following fields in a JSON object: "question", "answer", and "type".
-      The "type" field must exactly match the requested worksheet type: "${details.worksheetType}".
-
-      - If the type is "Multiple Choice", you MUST also provide an "options" array with 4 distinct choices, one of which is the correct answer.
-      - If the type is "Fill-in-the-Blank", the question text MUST include one or more "____" placeholders. The "answer" field should be the exact word(s) that fit in the blank. Do NOT provide an "options" array.
-      - For "Short Answer", "Matching", or "Problem Solving", the "answer" field should contain the ideal correct answer. Do NOT provide an "options" array.
-    `;
-
-    const response = await ai.models.generateContent({
-      model: model,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              question: { type: Type.STRING },
-              options: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING },
-                nullable: true,
-              },
-              answer: { type: Type.STRING },
-              type: { type: Type.STRING },
-            },
-            required: ["question", "answer", "type"],
-          },
+// Define a schema for the quiz questions to ensure consistent JSON output from the model.
+const quizQuestionSchema = {
+    type: Type.OBJECT,
+    properties: {
+        question: { type: Type.STRING },
+        options: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+            nullable: true,
         },
-      },
-    });
-
-    const jsonText = response.text;
-    const questions = JSON.parse(jsonText);
-
-    if (!Array.isArray(questions) || questions.length === 0) {
-      throw new Error("AI returned no questions.");
-    }
-
-    return questions;
-
-  } catch (error) {
-    console.error("Error generating quiz questions:", error);
-    throw new Error("Failed to generate quiz questions. Please check the topic and try again.");
-  }
+        answer: { type: Type.STRING },
+        type: { type: Type.STRING, description: "The type of question, e.g., 'Multiple Choice', 'Short Answer'" },
+        explanation: { type: Type.STRING, description: "A brief, kid-friendly explanation for why the answer is correct." },
+    },
+    required: ['question', 'answer', 'type', 'explanation'],
 };
 
+// Function to generate quiz questions based on user specifications.
+export const generateQuizQuestions = async (details: GenerationDetails): Promise<QuizQuestion[]> => {
+    try {
+        const model = 'gemini-2.5-flash';
 
-// Function to generate topics for the worksheet library
+        const prompt = `
+            Create a set of ${details.numQuestions} quiz questions for a ${details.gradeLevel} student.
+            The subject is ${details.subject} and the topic is "${details.topic}".
+            The worksheet type should be "${details.worksheetType}".
+            
+            Here are some custom instructions: "${details.customInstructions || 'None'}".
+
+            Generate the questions in a JSON array format. Each object should contain:
+            - "question": The question text.
+            - "options": An array of possible answers (for Multiple Choice or Matching). For other types, this can be null or empty.
+            - "answer": The correct answer.
+            - "type": The type of question, which should be "${details.worksheetType}".
+            - "explanation": A simple, one or two-sentence explanation for why the correct answer is correct. This is for the student to learn from their mistakes.
+            
+            Ensure the questions are appropriate for the specified grade level and subject.
+            Ensure the "explanation" field is always filled.
+        `;
+        
+        const response = await ai.models.generateContent({
+            model: model,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.ARRAY,
+                    items: quizQuestionSchema,
+                },
+            },
+        });
+        
+        // The model's response text is a JSON string, which needs to be parsed.
+        const responseText = response.text.trim();
+        const questions = JSON.parse(responseText);
+        
+        if (!Array.isArray(questions) || questions.length === 0) {
+            throw new Error("The AI returned an invalid or empty list of questions.");
+        }
+
+        return questions;
+
+    } catch (error) {
+        console.error("Error generating quiz questions:", error);
+        throw new Error("Failed to generate quiz questions. Please check the topic and try again.");
+    }
+};
+
+// Function to format the generated questions into a printable HTML worksheet.
+export const formatWorksheetFromQuestions = async (
+    questions: QuizQuestion[],
+    details: GenerationDetails
+): Promise<{ worksheet: string; answerKey: string }> => {
+    try {
+        const model = 'gemini-2.5-flash';
+
+        const questionsString = questions.map((q, i) =>
+            `${i + 1}. ${q.question}\n` +
+            (q.options ? `   Options: ${q.options.join(', ')}\n` : '') +
+            `   Answer: ${q.answer}\n`
+        ).join('\n');
+
+        const prompt = `
+            Please format the following quiz questions into a visually appealing and printable HTML worksheet for a ${details.gradeLevel} student.
+            The topic is "${details.topic}". Use Tailwind CSS classes for styling. Make it clean, kid-friendly, and professional.
+            
+            The final output should be a JSON object with two keys: "worksheet" and "answerKey".
+            - The "worksheet" value should be an HTML string containing the worksheet with places for the student to write their name and date, the questions, and answer lines. DO NOT include the answers in the worksheet. Use dark text colors like text-slate-800.
+            - The "answerKey" value should be a separate HTML string, clearly marked as an "Answer Key", showing the questions and their correct answers.
+            - Use a div with class "p-8 max-w-4xl mx-auto" as the main container for both.
+            - Use classes like "text-2xl font-bold mb-4" for headers, "space-y-4" for question lists, etc.
+            - For multiple choice, list options using 'A.', 'B.', 'C.' etc.
+
+            Here are the questions:
+            ${questionsString}
+        `;
+
+        const response = await ai.models.generateContent({
+            model,
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        worksheet: { type: Type.STRING },
+                        answerKey: { type: Type.STRING },
+                    },
+                    required: ['worksheet', 'answerKey'],
+                },
+            },
+        });
+
+        const responseText = response.text.trim();
+        const formattedContent = JSON.parse(responseText);
+        
+        if (!formattedContent.worksheet || !formattedContent.answerKey) {
+            throw new Error("AI failed to format the worksheet correctly.");
+        }
+
+        return formattedContent;
+
+    } catch (error) {
+        console.error("Error formatting worksheet:", error);
+        throw new Error("Failed to format the worksheet. You can still assign the questions or try again.");
+    }
+};
+
+// Function to generate a library of worksheet topics for inspiration.
 export const generateLibraryTopics = async (gradeLevel: string): Promise<Topic[]> => {
     try {
         const model = 'gemini-2.5-flash';
+        const categories = ['Math', 'Science', 'History', 'Language', 'Art', 'Logic', 'Trivia'];
+
+        const prompt = `
+            Generate a list of 8 creative and engaging worksheet ideas for a ${gradeLevel} student.
+            For each idea, provide a short, catchy title, a simple prompt for the AI to generate the worksheet, and a category from the following list: ${categories.join(', ')}.
+            
+            Return the list as a JSON array. Each object in the array should have three keys:
+            - "title": A short, catchy title for the worksheet (e.g., "Dinosaur Detectives").
+            - "prompt": The text that would be used as the 'topic' to generate the worksheet (e.g., "Facts about Tyrannosaurus Rex").
+            - "category": One of the provided categories.
+        `;
+
         const response = await ai.models.generateContent({
-            model: model,
-            contents: `Generate 8 diverse and fun worksheet topic ideas for a ${gradeLevel} student. For each topic, provide a short, engaging title, a simple one-sentence prompt for the AI to generate the worksheet, and a category from this list: Math, Science, History, Language, Art, Trivia, Logic.`,
+            model,
+            contents: prompt,
             config: {
-                responseMimeType: 'application/json',
+                responseMimeType: "application/json",
                 responseSchema: {
                     type: Type.ARRAY,
                     items: {
@@ -158,16 +169,17 @@ export const generateLibraryTopics = async (gradeLevel: string): Promise<Topic[]
             },
         });
 
-        const jsonText = response.text;
-        const topics = JSON.parse(jsonText);
+        const responseText = response.text.trim();
+        const topics = JSON.parse(responseText);
 
         if (!Array.isArray(topics) || topics.length === 0) {
-            throw new Error('AI returned no topics.');
+            throw new Error("The AI returned an invalid or empty list of topics.");
         }
 
         return topics;
+
     } catch (error) {
-        console.error('Error generating library topics:', error);
-        throw new Error('Failed to fetch ideas. The AI might be overloaded, please try again.');
+        console.error("Error generating library topics:", error);
+        throw new Error("Could not load worksheet ideas at this time. Please try again later.");
     }
 };

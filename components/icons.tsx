@@ -1,20 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // Main App Icon
-export const BrainyBunnyIcon = ({ className = "w-10 h-10" }: { className?: string }): React.JSX.Element => (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-        <path d="M15.5 11.5a.5.5 0 0 1-.5-.5V6.5a3.5 3.5 0 0 0-7 0v4.5a.5.5 0 0 1-1 0V6.5a4.5 4.5 0 1 1 9 0v4.5a.5.5 0 0 1-.5.5z" />
-        <path d="M18.5 11.5c0 4.14-2.91 7.5-6.5 7.5s-6.5-3.36-6.5-7.5c0-4.14 2.91-7.5 6.5-7.5s6.5 3.36 6.5 7.5z" />
-    </svg>
-);
+export const BrainyBunnyIcon = ({ className = "w-10 h-10" }: { className?: string }): React.JSX.Element => {
+    const [useFallback, setUseFallback] = useState(false);
+
+    // The original SVG icon, to be used as a fallback
+    const SvgIcon = () => (
+        <svg
+          className={className}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+            <path d="M15.5 11.5a.5.5 0 0 1-.5-.5V6.5a3.5 3.5 0 0 0-7 0v4.5a.5.5 0 0 1-1 0V6.5a4.5 4.5 0 1 1 9 0v4.5a.5.5 0 0 1-.5.5z" />
+            <path d="M18.5 11.5c0 4.14-2.91 7.5-6.5 7.5s-6.5-3.36-6.5-7.5c0-4.14 2.91-7.5 6.5-7.5s6.5 3.36 6.5 7.5z" />
+        </svg>
+    );
+
+    if (useFallback) {
+        return <SvgIcon />;
+    }
+
+    return (
+        <img
+            src="/assets/brainbunny.png"
+            alt="BrainyBunny Logo"
+            className={className}
+            onError={() => setUseFallback(true)}
+        />
+    );
+};
+
 
 // --- Generic Icons (Heroicons - Outline Style) ---
 

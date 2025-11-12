@@ -57,14 +57,18 @@
         backface-visibility: hidden;
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
         padding: 1.5rem;
         border-radius: 1.5rem; /* 24px */
       }
 
+      .quiz-card-front {
+        justify-content: center;
+      }
+      
       .quiz-card-back {
         transform: rotateY(180deg);
+        justify-content: flex-start; /* FIX: Align content to the top */
       }
       
       /* Heart animation */

@@ -7,6 +7,7 @@ import { QuizGame } from './QuizGame';
 import { ClockIcon, CheckCircleIcon, SparklesIcon } from '../icons';
 import { Header } from '../Header';
 import { useUser } from '../../contexts/UserContext';
+import { QuizLoader } from '../loaders';
 
 type StudentZoneProps = {
     student: StudentProfile;
@@ -14,7 +15,7 @@ type StudentZoneProps = {
     onSwitchProfile: () => void;
 };
 
-type View = 'dashboard' | 'setup' | 'quiz' | 'voice_quiz';
+type View = 'dashboard' | 'setup' | 'loading_quiz' | 'quiz' | 'voice_quiz';
 
 export const StudentZone = ({ student, onSwitchToParent, onSwitchProfile }: StudentZoneProps) => {
     const { session } = useUser();
@@ -28,23 +29,29 @@ export const StudentZone = ({ student, onSwitchToParent, onSwitchProfile }: Stud
 
     const handleStartQuiz = async (settings: QuizSettings) => {
         setError(null);
+        setQuizSettings(settings);
+
         if (settings.mode === 'voice') {
-            setQuizSettings(settings);
             setView('voice_quiz');
             return;
         }
 
+        setView('loading_quiz');
         try {
-            // FIX: The generateQuizQuestions function expects a single GenerationDetails-like object.
             const questions = await generateQuizQuestions({
                 gradeLevel: settings.gradeLevel,
                 topic: settings.topic,
-                numQuestions: 5, // A reasonable number for a practice quiz
+                numQuestions: 5,
                 worksheetType: "Multiple Choice",
                 subject: "Practice",
                 includeAnswerKey: false,
                 customInstructions: `The quiz difficulty should be ${settings.difficulty}.`
             });
+            
+            if (!questions || questions.length === 0) {
+                 throw new Error("The AI couldn't generate questions for this topic. Please try another one!");
+            }
+
             const tempAssignment: Assignment = { 
                 ...settings, 
                 questions, 
@@ -70,6 +77,10 @@ export const StudentZone = ({ student, onSwitchToParent, onSwitchProfile }: Stud
         setActiveAssignment(null);
         setQuizSettings(null);
     };
+    
+    if (view === 'loading_quiz' && quizSettings) {
+        return <QuizLoader topic={quizSettings.topic} />
+    }
 
     if (view === 'setup') {
         return (

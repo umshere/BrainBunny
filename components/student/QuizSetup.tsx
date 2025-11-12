@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { QuizSettings } from '../../types';
-import { AcademicCapIcon, BrainyBunnyIcon, LightBulbIcon, MicrophoneIcon, SparklesIcon, XMarkIcon } from '../icons';
+import { BrainyBunnyIcon, ArrowUturnLeftIcon, SparklesIcon } from '../icons';
+import { ButtonLoader } from '../loaders';
+
 
 type QuizSetupProps = {
     onStart: (settings: QuizSettings) => void;
@@ -8,61 +10,62 @@ type QuizSetupProps = {
     error: string | null;
 };
 
-const DIFFICULTIES: ('Easy' | 'Medium' | 'Hard')[] = ['Easy', 'Medium', 'Hard'];
+const difficulties: QuizSettings['difficulty'][] = ['Easy', 'Medium', 'Hard'];
+const modes: QuizSettings['mode'][] = ['classic', 'voice'];
 
 export const QuizSetup = ({ onStart, onBack, error }: QuizSetupProps) => {
     const [topic, setTopic] = useState('');
-    const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
-    const [gradeLevel, setGradeLevel] = useState('3rd Grade'); // This would ideally come from student profile
-    const [mode, setMode] = useState<'classic' | 'voice'>('classic');
-    const [internalError, setInternalError] = useState<string | null>(null);
+    const [difficulty, setDifficulty] = useState<QuizSettings['difficulty']>('Medium');
+    const [mode, setMode] = useState<QuizSettings['mode']>('classic');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!topic.trim()) {
-            setInternalError('Please enter a topic to practice!');
-            return;
+        if (topic.trim() && !isLoading) {
+            setIsLoading(true);
+            onStart({
+                topic: topic.trim(),
+                difficulty,
+                mode,
+                gradeLevel: 'practice', // Grade level isn't as critical for self-practice
+            });
         }
-        setInternalError(null);
-        onStart({ topic, difficulty, gradeLevel, mode });
     };
 
     return (
-        <div className="w-full max-w-md mx-auto bg-white p-8 rounded-2xl shadow-lg border border-slate-200 relative animate-fade-in">
-             <button onClick={onBack} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-                <XMarkIcon className="w-6 h-6" />
+        <div className="w-full max-w-md mx-auto bg-white p-8 rounded-2xl shadow-2xl border border-slate-200 relative">
+            <button onClick={onBack} className="absolute top-4 left-4 text-slate-500 hover:text-slate-800 disabled:opacity-50" disabled={isLoading}>
+                <ArrowUturnLeftIcon className="w-6 h-6" />
             </button>
-            <BrainyBunnyIcon className="w-16 h-16 text-sky-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-slate-800 text-center mb-2">Practice Zone</h2>
-            <p className="text-slate-500 text-center mb-6">What do you want to practice today?</p>
+            <BrainyBunnyIcon className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-800 text-center">Practice Quiz</h2>
+            <p className="text-slate-500 text-center mt-2 mb-6">What do you want to practice today?</p>
             
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label htmlFor="topic" className="font-semibold text-slate-700 mb-2 flex items-center">
-                        <LightBulbIcon className="w-5 h-5 mr-2" /> Topic
-                    </label>
+                    <label htmlFor="topic" className="block text-sm font-medium text-slate-700 mb-1">Topic</label>
                     <input
-                        id="topic"
                         type="text"
+                        id="topic"
                         value={topic}
-                        onChange={e => setTopic(e.target.value)}
-                        placeholder="e.g., Multiplication"
+                        onChange={(e) => setTopic(e.target.value)}
+                        placeholder="e.g., 'Addition up to 100'"
                         className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500"
                         required
+                        disabled={isLoading}
                     />
                 </div>
                 
                 <div>
-                    <label className="font-semibold text-slate-700 mb-2 block">
-                        <AcademicCapIcon className="w-5 h-5 mr-2 inline" /> Difficulty
-                    </label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Difficulty</label>
                     <div className="grid grid-cols-3 gap-2">
-                        {DIFFICULTIES.map(d => (
+                        {difficulties.map(d => (
                             <button
                                 type="button"
                                 key={d}
                                 onClick={() => setDifficulty(d)}
-                                className={`p-3 text-sm font-semibold rounded-lg border-2 transition ${difficulty === d ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-slate-600 border-slate-200 hover:border-sky-400'}`}
+                                className={`px-3 py-2 text-sm font-semibold rounded-lg border-2 transition ${difficulty === d ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-slate-600 hover:border-sky-400'}`}
+                                disabled={isLoading}
                             >
                                 {d}
                             </button>
@@ -71,22 +74,35 @@ export const QuizSetup = ({ onStart, onBack, error }: QuizSetupProps) => {
                 </div>
 
                 <div>
-                     <label className="font-semibold text-slate-700 mb-2 block">
-                        <MicrophoneIcon className="w-5 h-5 mr-2 inline" /> Quiz Mode
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                         <button type="button" onClick={() => setMode('classic')} className={`p-3 text-sm font-semibold rounded-lg border-2 transition ${mode === 'classic' ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-slate-600 border-slate-200 hover:border-sky-400'}`}>Classic</button>
-                         <button type="button" onClick={() => setMode('voice')} className={`p-3 text-sm font-semibold rounded-lg border-2 transition ${mode === 'voice' ? 'bg-purple-500 text-white border-purple-500' : 'bg-white text-slate-600 border-slate-200 hover:border-purple-400'}`}>Voice (Soon)</button>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Mode</label>
+                     <div className="grid grid-cols-2 gap-2">
+                         {modes.map(m => (
+                            <button
+                                type="button"
+                                key={m}
+                                onClick={() => setMode(m)}
+                                className={`px-3 py-2 text-sm font-semibold rounded-lg border-2 transition capitalize ${mode === m ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-slate-600 hover:border-sky-400'}`}
+                                disabled={isLoading || m === 'voice'}
+                            >
+                                {m}{m === 'voice' && ' (Soon)'}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
-                {(error || internalError) && <p className="text-red-500 text-center bg-red-50 p-3 rounded-lg">{error || internalError}</p>}
-
+                {error && <p className="text-red-500 text-center bg-red-50 p-3 rounded-lg">{error}</p>}
+                
                 <button
                     type="submit"
-                    className="w-full flex items-center justify-center bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg hover:shadow-xl text-lg"
+                    disabled={isLoading}
+                    className="w-full h-[52px] flex items-center justify-center bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-4 rounded-lg transition text-lg shadow-lg hover:shadow-xl disabled:bg-slate-400"
                 >
-                    <SparklesIcon className="w-6 h-6 mr-2" /> Start Quiz
+                    {isLoading ? <ButtonLoader /> : (
+                        <>
+                            <SparklesIcon className="w-6 h-6 mr-2" />
+                            Start Quiz
+                        </>
+                    )}
                 </button>
             </form>
         </div>

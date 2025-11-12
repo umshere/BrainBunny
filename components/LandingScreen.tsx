@@ -8,11 +8,12 @@ export const LandingScreen = () => {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-amber-50 to-sky-50">
-           <main className="flex-grow flex items-center justify-center w-full">
-                <div className="w-full max-w-md mx-auto bg-white p-8 rounded-2xl shadow-lg border border-slate-200 text-center">
-                    <BrainyBunnyIcon className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+            <main className="w-full max-w-sm">
+                <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 text-center">
+                    <BrainyBunnyIcon className="w-16 h-16 mx-auto text-amber-500 mb-2" />
                     <h1 className="text-3xl font-bold text-slate-800">Welcome to BrainyBunny!</h1>
                     <p className="text-slate-500 mt-2 mb-8">AI-powered homework, personalized for your child.</p>
+
                     <div className="space-y-4">
                         <button
                             onClick={() => alert("Google Sign-In coming soon!")}
@@ -21,17 +22,18 @@ export const LandingScreen = () => {
                             <GoogleIcon />
                             Sign in with Google
                         </button>
+
                         <button
                             onClick={loginAsGuest}
-                            className="w-full flex items-center justify-center p-3 bg-amber-500 hover:bg-amber-600 rounded-lg transition-all font-bold text-white shadow-md"
+                            className="w-full flex items-center justify-center p-3 bg-amber-500 hover:bg-amber-600 rounded-lg transition-all font-bold text-white shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                             <UserIcon className="w-5 h-5 mr-2" />
                             Continue as Guest
                         </button>
                     </div>
                 </div>
-           </main>
-           <Footer isLoginScreen={true} />
+            </main>
+            <Footer isLoginScreen={true} />
         </div>
     );
 };

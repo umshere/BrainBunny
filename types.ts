@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Fix: Provide full content for types.ts to resolve module errors.
 export type User = {
     id: string;
@@ -15,6 +17,7 @@ export type QuizQuestion = {
     options?: string[]; // Options are now optional
     answer: string;
     type: string; // Added to handle different question formats
+    explanation?: string; // To show why the answer is correct
 };
 
 export type Assignment = {

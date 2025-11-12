@@ -1,34 +1,17 @@
 import React from 'react';
-import { ArrowDownTrayIcon, SparklesIcon, KeyIcon } from './icons';
+import { BeakerIcon, PuzzlePieceIcon } from './icons';
 
-export const ComingSoon = () => (
-    <div className="mt-8 bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-slate-200">
-      <h3 className="text-xl font-bold text-slate-800 text-center mb-4">What's Next for BrainyBunny?</h3>
-      <p className="text-center text-slate-500 mb-6 max-w-2xl mx-auto">
-          We're always working on new features based on your feedback. Here's a sneak peek at what's on the roadmap:
-      </p>
-      <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-          <li className="bg-sky-50/50 p-4 rounded-lg border border-sky-100">
-              <div className="flex justify-center items-center mb-2 text-sky-500">
-                  <ArrowDownTrayIcon className="w-7 h-7" />
-              </div>
-              <h4 className="font-semibold text-slate-700">DOCX & Image Export</h4>
-              <p className="text-sm text-slate-500">Download as an editable document or shareable image.</p>
-          </li>
-          <li className="bg-emerald-50/50 p-4 rounded-lg border border-emerald-100">
-              <div className="flex justify-center items-center mb-2 text-emerald-500">
-                  <SparklesIcon className="w-7 h-7" />
-              </div>
-              <h4 className="font-semibold text-slate-700">Smart Error Analysis</h4>
-              <p className="text-sm text-slate-500">Get parent coaching tips based on your child's mistakes.</p>
-          </li>
-           <li className="bg-amber-50/50 p-4 rounded-lg border border-amber-100">
-              <div className="flex justify-center items-center mb-2 text-amber-500">
-                 <KeyIcon className="w-7 h-7" />
-              </div>
-              <h4 className="font-semibold text-slate-700">Parent Coaching Tips</h4>
-              <p className="text-sm text-slate-500">Actionable advice to help your child learn concepts.</p>
-          </li>
-      </ul>
-    </div>
-)
+export const ComingSoon = () => {
+    return (
+        <div className="bg-gradient-to-r from-sky-50 to-purple-50 p-6 md:p-8 rounded-2xl shadow-lg border border-slate-200 text-center">
+            <div className="flex justify-center items-center gap-4 mb-4">
+                <BeakerIcon className="w-10 h-10 text-sky-500 opacity-80" />
+                <PuzzlePieceIcon className="w-12 h-12 text-purple-500" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800">More Fun is On The Way!</h3>
+            <p className="text-slate-500 mt-2 max-w-xl mx-auto">
+                We're busy building exciting new features like interactive voice quizzes, progress tracking, and custom learning paths. Stay tuned!
+            </p>
+        </div>
+    );
+};
