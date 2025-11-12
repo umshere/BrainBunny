@@ -137,11 +137,12 @@ export const formatWorksheetFromQuestions = async (
 export const generateLibraryTopics = async (gradeLevel: string): Promise<Topic[]> => {
     try {
         const model = 'gemini-2.5-flash';
-        const categories = ['Math', 'Science', 'History', 'Language', 'Art', 'Logic', 'Trivia'];
+        const categories = ['Math', 'Science', 'History', 'Language', 'Art', 'Logic', 'Trivia', 'Other'];
 
         const prompt = `
             Generate a list of 8 creative and engaging worksheet ideas for a ${gradeLevel} student.
             For each idea, provide a short, catchy title, a simple prompt for the AI to generate the worksheet, and a category from the following list: ${categories.join(', ')}.
+            If a topic doesn't fit well into the main categories, please assign it the category "Other".
             
             Return the list as a JSON array. Each object in the array should have three keys:
             - "title": A short, catchy title for the worksheet (e.g., "Dinosaur Detectives").

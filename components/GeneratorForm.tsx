@@ -2,7 +2,8 @@ import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react'
 import {
     DocumentIcon, ClockIcon, ArrowUpTrayIcon, CameraIcon, XMarkIcon,
     ArrowPathIcon, AcademicCapIcon, Bars3BottomLeftIcon, BeakerIcon,
-    CalculatorIcon, BuildingLibraryIcon, SparklesIcon, PencilIcon
+    CalculatorIcon, BuildingLibraryIcon, SparklesIcon, PencilIcon,
+    PaintBrushIcon, PuzzlePieceIcon, QuestionMarkCircleIcon, LightBulbIcon
 } from './icons';
 import { CameraModal } from './CameraModal';
 import { GenerationDetails } from '../types';
@@ -13,7 +14,7 @@ type GeneratorFormProps = {
 };
 
 export type GeneratorFormHandle = {
-    setFormData: (prompt: string, grade: string) => void;
+    setFormData: (prompt: string, grade: string, category: string) => void;
 };
 
 const SUBJECTS = [
@@ -21,7 +22,10 @@ const SUBJECTS = [
     { name: 'Science', icon: <BeakerIcon /> },
     { name: 'Language Arts', icon: <Bars3BottomLeftIcon /> },
     { name: 'History', icon: <BuildingLibraryIcon /> },
-    { name: 'Art', icon: <SparklesIcon /> },
+    { name: 'Art', icon: <PaintBrushIcon /> },
+    { name: 'Logic', icon: <PuzzlePieceIcon /> },
+    { name: 'Trivia', icon: <QuestionMarkCircleIcon /> },
+    { name: 'Other', icon: <LightBulbIcon /> },
 ];
 
 const WORKSHEET_TYPES = ['Multiple Choice', 'Fill-in-the-Blank', 'Short Answer', 'Matching', 'Problem Solving'];
@@ -71,9 +75,21 @@ export const GeneratorForm = forwardRef<GeneratorFormHandle, GeneratorFormProps>
     };
     
     useImperativeHandle(ref, () => ({
-        setFormData: (prompt: string, grade: string) => {
+        setFormData: (prompt: string, grade: string, category: string) => {
             setTopic(prompt);
             setGradeLevel(grade);
+            
+            // Normalize "Language" to "Language Arts" for matching
+            const normalizedCategory = category === 'Language' ? 'Language Arts' : category;
+            
+            const foundSubject = SUBJECTS.find(s => s.name.toLowerCase() === normalizedCategory.toLowerCase());
+            
+            if (foundSubject) {
+                setSubject(foundSubject.name);
+            } else {
+                // Default to 'Other' if a category from the library isn't in the form's subject list
+                setSubject('Other');
+            }
         }
     }));
 
@@ -97,7 +113,7 @@ export const GeneratorForm = forwardRef<GeneratorFormHandle, GeneratorFormProps>
             {/* Subject */}
             <div>
                  <label className="mb-2 font-semibold text-slate-700 block">Subject</label>
-                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                      {SUBJECTS.map(s => (
                          <button type="button" key={s.name} onClick={() => setSubject(s.name)} className={`flex flex-col items-center justify-center p-3 text-sm font-semibold rounded-lg border-2 transition-all ${subject === s.name ? 'bg-amber-100 border-amber-500 text-amber-800' : 'bg-white border-slate-200 text-slate-600 hover:border-amber-400'}`}>
                              <div className="w-6 h-6 mb-1">{s.icon}</div>

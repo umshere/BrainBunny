@@ -7,29 +7,44 @@ export const LandingScreen = () => {
     const { loginAsGuest } = useUser();
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-amber-50 to-sky-50">
-            <main className="w-full max-w-sm">
-                <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 text-center">
-                    <BrainyBunnyIcon className="w-16 h-16 mx-auto text-amber-500 mb-2" />
-                    <h1 className="text-3xl font-bold text-slate-800">Welcome to BrainyBunny!</h1>
-                    <p className="text-slate-500 mt-2 mb-8">AI-powered homework, personalized for your child.</p>
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 to-sky-50">
+            <main className="flex-grow flex flex-col items-center justify-center p-4 text-center">
+                
+                {/* Brand Vision Section */}
+                <div className="max-w-3xl mx-auto mb-12">
+                    <BrainyBunnyIcon className="w-20 h-20 mx-auto text-amber-500" />
+                    <h1 className="mt-4 text-4xl md:text-5xl font-bold text-slate-800 tracking-tight">
+                        Homework that adapts to your child,
+                        <br />
+                        <span className="text-amber-500">not the other way around.</span>
+                    </h1>
+                    <p className="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+                        BrainyBunny transforms homework into a personalized growth journey that evolves with your learner, turning practice into a fun and achievable adventure.
+                    </p>
+                </div>
 
-                    <div className="space-y-4">
-                        <button
-                            onClick={() => alert("Google Sign-In coming soon!")}
-                            className="w-full flex items-center justify-center p-3 bg-white border-2 border-slate-300 hover:border-amber-400 rounded-lg transition-all font-semibold text-slate-700"
-                        >
-                            <GoogleIcon />
-                            Sign in with Google
-                        </button>
+                {/* Login Card */}
+                <div className="w-full max-w-sm">
+                    <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
+                        <h2 className="text-xl font-bold text-slate-700 mb-1">Ready to Start?</h2>
+                        <p className="text-slate-500 mb-6">Get full access instantly. No account needed.</p>
 
-                        <button
-                            onClick={loginAsGuest}
-                            className="w-full flex items-center justify-center p-3 bg-amber-500 hover:bg-amber-600 rounded-lg transition-all font-bold text-white shadow-lg hover:shadow-xl transform hover:scale-105"
-                        >
-                            <UserIcon className="w-5 h-5 mr-2" />
-                            Continue as Guest
-                        </button>
+                        <div className="space-y-4">
+                             <button
+                                onClick={loginAsGuest}
+                                className="w-full flex items-center justify-center p-3 bg-amber-500 hover:bg-amber-600 rounded-lg transition-all font-bold text-white shadow-lg hover:shadow-xl transform hover:scale-105"
+                            >
+                                <UserIcon className="w-5 h-5 mr-2" />
+                                Continue as Guest
+                            </button>
+                            <button
+                                onClick={() => alert("Google Sign-In coming soon!")}
+                                className="w-full flex items-center justify-center p-3 bg-white border-2 border-slate-300 hover:border-amber-400 rounded-lg transition-all font-semibold text-slate-700"
+                            >
+                                <GoogleIcon />
+                                Sign in with Google
+                            </button>
+                        </div>
                     </div>
                 </div>
             </main>

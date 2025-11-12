@@ -74,9 +74,9 @@ export const MainApp = ({ student, onPrintRequest, onStartOver }: MainAppProps) 
         onStartOver(); // Reset the view after assigning
     };
 
-    const handleTopicSelected = (prompt: string, grade: string) => {
+    const handleTopicSelected = (prompt: string, grade: string, category: string) => {
         if (formRef.current) {
-            formRef.current.setFormData(prompt, grade);
+            formRef.current.setFormData(prompt, grade, category);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };

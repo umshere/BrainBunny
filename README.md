@@ -1,5 +1,21 @@
 # BrainyBunny.ai - AI-Powered Homework Helper
 
+🌱 Vision: Personalized Learning That Grows With Every Child
+
+Every child learns differently — even if they’re in the same grade.
+BrainyBunny was created with one simple belief:
+
+Homework should adapt to the child, not the other way around.
+
+Our mission is to transform homework into a personalized growth journey — one that evolves with the learner.
+BrainyBunny observes how each child learns, analyzes patterns from their responses, and intelligently generates tailor-made worksheets that balance challenge with encouragement.
+
+For parents, it’s more than a tool — it’s a window into their child’s learning mind.
+It offers coaching tips, progress insights, and emotional cues to help them nurture confidence and curiosity.
+For kids, it keeps learning fun, achievable, and full of discovery. 🐰
+
+In essence: BrainyBunny isn’t just an AI homework generator — it’s a gentle, growing companion for every learner and family.
+
 BrainyBunny is a modern web application designed to help parents and educators create personalized, engaging homework for children. It leverages the Google Gemini API to generate a wide variety of educational content and provides an interactive platform for students to practice and learn.
 
 The entire application runs in a **full-featured guest mode**, allowing immediate access without needing an account. All session data, including multiple student profiles, is conveniently saved in your browser.

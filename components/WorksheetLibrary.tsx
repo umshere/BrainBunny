@@ -8,7 +8,7 @@ import {
 } from './icons';
 
 type WorksheetLibraryProps = {
-    onTopicSelected: (prompt: string, grade: string) => void;
+    onTopicSelected: (prompt: string, grade: string, category: string) => void;
 };
 
 const categoryIcons: { [key: string]: React.JSX.Element } = {
@@ -51,7 +51,7 @@ export const WorksheetLibrary = ({ onTopicSelected }: WorksheetLibraryProps) => 
     }, [gradeLevel]);
 
     const handleSelect = (topic: Topic) => {
-        onTopicSelected(topic.prompt, gradeLevel);
+        onTopicSelected(topic.prompt, gradeLevel, topic.category);
     };
 
     const renderSkeleton = () => (

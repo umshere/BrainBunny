@@ -4,8 +4,8 @@ import { LightBulbIcon, PaintBrushIcon, CoffeeBrewerIcon } from './icons';
 export const QuestionsLoader = ({ topic }: { topic: string }) => (
     <div className="text-center p-8 bg-white rounded-2xl shadow-lg border border-slate-200">
         <CoffeeBrewerIcon />
-        <h2 className="text-2xl font-bold text-slate-800 mt-4 animate-pulse">Brewing a Fresh Worksheet...</h2>
-        <p className="text-slate-500 mt-2">Our AI is crafting some great questions about <span className="font-semibold">{topic}</span>. This shouldn't take long!</p>
+        <h2 className="text-2xl font-bold text-slate-800 mt-4 animate-pulse">BrainyBunny is Brewing Your Worksheet...</h2>
+        <p className="text-slate-500 mt-2">Our clever bunny is crafting some great questions about <span className="font-semibold">{topic}</span>. This shouldn't take long!</p>
     </div>
 );
 
@@ -14,8 +14,8 @@ export const FormattingLoader = () => (
         <div className="relative inline-block">
             <PaintBrushIcon className="w-16 h-16 text-sky-500 animate-pulse" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-800 mt-4 animate-pulse">Formatting Your Worksheet...</h2>
-        <p className="text-slate-500 mt-2">Making it look just right for printing. Almost there!</p>
+        <h2 className="text-2xl font-bold text-slate-800 mt-4 animate-pulse">BrainyBunny is Adding the Finishing Touches...</h2>
+        <p className="text-slate-500 mt-2">Making it look perfect for your little learner. Almost there!</p>
     </div>
 );
 
@@ -43,11 +43,11 @@ const PENCIL_SHAVING_PATHS = [
 ];
 
 const LOADING_MESSAGES = [
-    "Sharpening our pencils...",
-    "Finding the best brain-teasers...",
-    "Warming up our thinking caps!",
-    "Get ready for a challenge!",
-    "Assembling awesome questions..."
+    "BrainyBunny is sharpening its pencils...",
+    "Hopping around for the best brain-teasers...",
+    "Warming up the ol' thinking cap!",
+    "Get ready for a fun challenge!",
+    "Assembling an awesome quiz just for you..."
 ];
 
 export const QuizLoader = ({ topic }: { topic: string }) => {
