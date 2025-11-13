@@ -1,6 +1,6 @@
 import React from 'react';
 import { useUser } from '../contexts/UserContext';
-import { BrainyBunnyIcon, UserIcon } from './icons';
+import { BrainyBunnyIcon, UserIcon, SparklesIcon } from './icons';
 import { Footer } from './Footer';
 
 export const LandingScreen = () => {
@@ -21,17 +21,36 @@ export const LandingScreen = () => {
                     <p className="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
                         BrainyBunny transforms homework into a personalized growth journey that evolves with your learner, turning practice into a fun and achievable adventure.
                     </p>
+                    <p className="mt-4 font-semibold text-sky-600">
+                        Are you a student? Jump right into a practice quiz!
+                    </p>
                 </div>
 
                 {/* Login Card */}
                 <div className="w-full max-w-sm">
                     <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
-                        <h2 className="text-xl font-bold text-slate-700 mb-1">Ready to Start?</h2>
-                        <p className="text-slate-500 mb-6">Get full access instantly. No account needed.</p>
+                        <h2 className="text-xl font-bold text-slate-700 mb-6">Ready to Start?</h2>
 
                         <div className="space-y-4">
-                             <button
-                                onClick={loginAsGuest}
+                            <button
+                                onClick={() => loginAsGuest('student')}
+                                className="w-full flex items-center justify-center p-3 bg-sky-500 hover:bg-sky-600 rounded-lg transition-all font-bold text-white shadow-lg hover:shadow-xl transform hover:scale-105"
+                            >
+                                <SparklesIcon className="w-5 h-5 mr-2" />
+                                Start a Quick Practice
+                            </button>
+
+                            <div className="relative my-4">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-slate-300" />
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="bg-white px-2 text-slate-500">Or for parents</span>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={() => loginAsGuest('parent')}
                                 className="w-full flex items-center justify-center p-3 bg-amber-500 hover:bg-amber-600 rounded-lg transition-all font-bold text-white shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
                                 <UserIcon className="w-5 h-5 mr-2" />

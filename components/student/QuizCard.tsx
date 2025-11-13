@@ -62,7 +62,7 @@ export const QuizCard = ({ question, questionNumber, totalQuestions, lives, font
                                 key={index}
                                 onClick={() => handleAnswer(option)}
                                 disabled={isAnswered}
-                                className={`w-full text-left p-4 rounded-xl border-2 text-lg transition-all duration-300 font-medium transform focus:outline-none focus:ring-4 focus:ring-amber-300
+                                className={`w-full text-left p-4 rounded-xl border-2 text-lg transition-all duration-300 font-medium transform focus:outline-none focus:ring-4 focus:ring-amber-300 text-slate-800
                                     ${isAnswered && option === question.answer ? 'bg-green-100 border-green-400 text-green-800 scale-105' : ''}
                                     ${isAnswered && selectedAnswer === option && !isCorrect ? 'bg-red-100 border-red-400 text-red-800' : ''}
                                     ${!isAnswered ? 'bg-white hover:bg-amber-50 border-slate-200' : 'bg-slate-50 text-slate-500 border-slate-200'}
@@ -134,7 +134,6 @@ export const QuizCard = ({ question, questionNumber, totalQuestions, lives, font
                                 className="font-bold text-slate-800 text-center"
                                 style={{ fontSize: questionTextFontSize }}
                             >
-                                {/* FIX: Display the actual question text */}
                                 {question.question || "Oops! It looks like this question is empty."}
                             </p>
                         </div>
@@ -142,8 +141,8 @@ export const QuizCard = ({ question, questionNumber, totalQuestions, lives, font
                     </div>
 
                     {/* --- BACK OF CARD --- */}
-                    <div className="quiz-card-back bg-white shadow-2xl border border-slate-200 flex flex-col justify-between">
-                         <div className="w-full text-center">
+                    <div className="quiz-card-back bg-white shadow-2xl border border-slate-200 flex flex-col">
+                         <div className="w-full text-center flex-grow overflow-y-auto">
                             {isCorrect ? (
                                 <CheckCircleIcon className="w-20 h-20 text-green-500 mx-auto animate-correct-pop" />
                             ) : (
@@ -153,22 +152,28 @@ export const QuizCard = ({ question, questionNumber, totalQuestions, lives, font
                                 {isCorrect ? "Correct!" : "Not Quite!"}
                             </h2>
                             {!isCorrect && (
-                                 <p className="text-slate-500 mt-2 text-lg">
-                                    The correct answer was: <span className="font-bold text-slate-700">{question.answer}</span>
+                                 <p className="text-slate-800 mt-2 text-lg">
+                                    The correct answer was: <span className="font-bold text-slate-900">{question.answer}</span>
                                 </p>
                             )}
+                            
+                            <div className="my-4 text-left p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                <p className="text-sm text-slate-700 font-medium">The question was:</p>
+                                <p className="mt-1 font-semibold text-slate-900">{question.question}</p>
+                            </div>
+
                             {!isCorrect && question.explanation && (
-                                <div className="mt-6 text-left p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">
+                                <div className="mt-4 text-left p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">
                                     <h3 className="font-bold text-amber-800 flex items-center">
                                         <span className="text-xl mr-2">💡</span> Explanation
                                     </h3>
-                                    <p className="text-slate-600 mt-1">{question.explanation}</p>
+                                    <p className="text-slate-800 mt-1">{question.explanation}</p>
                                 </div>
                             )}
                         </div>
                         <button
                             onClick={onNextQuestion}
-                            className={`w-full mt-6 font-bold py-4 rounded-xl text-xl transition-all ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white`}
+                            className={`w-full mt-auto flex-shrink-0 font-bold py-4 rounded-xl text-xl transition-all ${isCorrect ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'} text-white`}
                         >
                             Next Question
                         </button>

@@ -58,12 +58,12 @@ export const QuizResults = ({ score, totalQuestions, assignment, studentAnswers,
                                         : <XCircleIcon className="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
                                     }
                                     <div>
-                                        <p className={`font-medium ${isCorrect ? 'text-slate-600' : 'text-red-700 line-through'}`}>
+                                        <p className={`font-medium ${isCorrect ? 'text-slate-800' : 'text-red-700 line-through'}`}>
                                             Your answer: {studentAnswer || 'No answer'}
                                         </p>
                                         {!isCorrect && <p className="font-medium text-green-700">Correct answer: {q.answer}</p>}
                                         {!isCorrect && q.explanation && (
-                                            <p className="mt-1 text-slate-500 italic">💡 {q.explanation}</p>
+                                            <p className="mt-1 text-slate-700 italic">💡 {q.explanation}</p>
                                         )}
                                     </div>
                                 </div>

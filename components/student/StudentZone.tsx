@@ -13,13 +13,14 @@ type StudentZoneProps = {
     student: StudentProfile;
     onSwitchToParent: () => void;
     onSwitchProfile: () => void;
+    startInSetupView?: boolean;
 };
 
 type View = 'dashboard' | 'setup' | 'loading_quiz' | 'quiz' | 'voice_quiz';
 
-export const StudentZone = ({ student, onSwitchToParent, onSwitchProfile }: StudentZoneProps) => {
+export const StudentZone = ({ student, onSwitchToParent, onSwitchProfile, startInSetupView = false }: StudentZoneProps) => {
     const { session } = useUser();
-    const [view, setView] = useState<View>('dashboard');
+    const [view, setView] = useState<View>(startInSetupView ? 'setup' : 'dashboard');
     const [error, setError] = useState<string | null>(null);
     const [activeAssignment, setActiveAssignment] = useState<Assignment | null>(null);
     const [quizSettings, setQuizSettings] = useState<QuizSettings | null>(null);
@@ -85,7 +86,7 @@ export const StudentZone = ({ student, onSwitchToParent, onSwitchProfile }: Stud
     if (view === 'setup') {
         return (
             <div className="min-h-screen bg-gradient-to-br from-sky-100 to-purple-100 flex items-center justify-center p-4">
-                <QuizSetup onStart={handleStartQuiz} error={error} onBack={() => setView('dashboard')} />
+                <QuizSetup onStart={handleStartQuiz} error={error} onBack={() => setView('dashboard')} gradeLevel={student.gradeLevel} />
             </div>
         );
     }

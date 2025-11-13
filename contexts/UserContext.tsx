@@ -1,6 +1,6 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, PropsWithChildren } from 'react';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { SessionData, StudentProfile, Assignment, User, WeakPoint, QuizQuestion } from '../types';
+import { SessionData, StudentProfile, Assignment, User, WeakPoint, QuizQuestion, AppView } from '../types';
 
 // --- Default Data for Guest Session ---
 const GUEST_USER: User = { id: 'guest', name: 'Guest', avatar: '👤' };
@@ -17,29 +17,47 @@ const INITIAL_SESSION: SessionData = {
 // --- Context Definition ---
 type UserContextType = {
     session: SessionData;
-    loginAsGuest: () => void;
+    loginAsGuest: (initialView?: AppView) => void;
     logout: () => void;
     addStudent: (name: string, gradeLevel: string) => void;
     selectStudent: (studentId: string) => void;
     getActiveStudent: () => StudentProfile | null;
     completeAssignment: (studentId: string, assignmentId: string, score: number, studentAnswers: (string | null)[]) => void;
     addAssignment: (studentId: string, assignment: Assignment) => void;
+    clearInitialView: () => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 // --- Provider Component ---
-export const UserProvider = ({ children }: { children: ReactNode }) => {
+// FIX: Use PropsWithChildren to work around a TypeScript error where children are not being correctly inferred in App.tsx.
+export const UserProvider = ({ children }: PropsWithChildren<{}>) => {
     const [session, setSession] = usePersistentState<SessionData>('brainy-bunny-session', INITIAL_SESSION);
 
-    const loginAsGuest = () => {
-        setSession({
+    const loginAsGuest = (initialView: AppView = 'parent') => {
+        const sessionData: SessionData = {
             ...INITIAL_SESSION,
             isLoggedIn: true,
             user: GUEST_USER,
-            students: [], // Reset students on new guest login
+            students: [],
             activeStudentId: null,
-        });
+            initialView,
+        };
+
+        if (initialView === 'student') {
+            const practiceStudent: StudentProfile = {
+                id: `student_${Date.now()}`,
+                name: 'Explorer',
+                gradeLevel: '3rd Grade',
+                avatar: '🚀',
+                assignments: [],
+                weakPoints: [],
+            };
+            sessionData.students = [practiceStudent];
+            sessionData.activeStudentId = practiceStudent.id;
+        }
+
+        setSession(sessionData);
     };
     
     const logout = () => {
@@ -127,6 +145,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         }));
     };
 
+    const clearInitialView = () => {
+        setSession(prev => {
+            if (!prev.initialView) return prev;
+            const { initialView, ...rest } = prev;
+            return rest as SessionData;
+        });
+    };
+
     const value = {
         session,
         loginAsGuest,
@@ -136,6 +162,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         getActiveStudent,
         completeAssignment,
         addAssignment,
+        clearInitialView,
     };
 
     return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

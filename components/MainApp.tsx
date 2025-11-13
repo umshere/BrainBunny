@@ -15,7 +15,8 @@ type MainAppProps = {
     onStartOver: () => void;
 };
 
-export const MainApp = ({ student, onPrintRequest, onStartOver }: MainAppProps) => {
+// FIX: Use React.FC to correctly type the component so it accepts the 'key' prop without error.
+export const MainApp: React.FC<MainAppProps> = ({ student, onPrintRequest, onStartOver }) => {
     const { addAssignment } = useUser();
     const [status, setStatus] = useState<AppStatus>('idle');
     const [error, setError] = useState<string | null>(null);

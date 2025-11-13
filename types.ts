@@ -34,7 +34,7 @@ export type Assignment = {
 };
 
 export type StudentProfile = {
-    id: string;
+    id:string;
     name: string;
     avatar: string; // Emoji
     gradeLevel: string;
@@ -66,6 +66,7 @@ export type SessionData = {
     students: StudentProfile[];
     activeStudentId: string | null;
     credits: number;
+    initialView?: AppView;
 };
 
 // New types for the improved generator workflow

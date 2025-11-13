@@ -91,8 +91,8 @@ export const QuizGame = ({ assignment, onEnd }: QuizGameProps) => {
             <div className="w-full max-w-2xl">
                 {!isFinished ? (
                     currentQuestion && (
+                        // FIX: Removed redundant key prop. The QuizCard component internally resets its state via useEffect when the question prop changes.
                         <QuizCard
-                            key={currentQuestionIndex}
                             question={currentQuestion}
                             questionNumber={currentQuestionIndex + 1}
                             totalQuestions={assignment.questions.length}

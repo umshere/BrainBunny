@@ -20,15 +20,14 @@ The key user flow is:
     *   The student sees their list of pending interactive assignments.
     *   They can complete assignments on-screen.
     *   Performance is tracked, and topics of incorrect answers are saved as "Weak Points" on their profile.
-6.  **Adaptive Loop**: The parent can then use the "From Weak Points" feature to generate new worksheets specifically targeting areas where the student needs more practice.
+6.  **Adaptive Loop**: Student performance is tracked, and topics from incorrect answers are saved as "Weak Points" to their profile. Parents can view these topics and use them to manually create new, targeted worksheets, creating a personalized learning cycle.
 
 ## 2. Technology Stack
 
 -   **Frontend**: React with TypeScript, using hooks for state management.
 -   **Styling**: Tailwind CSS for utility-first styling.
 -   **AI**: Google Gemini API via `@google/genai` library.
-    -   `gemini-2.5-flash`: Used for fast, structured JSON generation (quiz questions, library topics).
-    -   `gemini-2.5-pro`: Used for more complex, creative content generation (formatting printable HTML worksheets).
+    -   `gemini-2.5-flash`: This is the primary model used for all AI tasks, including fast, structured JSON generation (quiz questions, library topics) and for formatting the printable HTML worksheets.
 -   **State Management**: React Context API (`UserContext`) for global session state.
 -   **Persistence**: A custom `usePersistentState` hook saves the entire session object to `window.localStorage`, enabling a seamless guest experience across browser refreshes.
 
@@ -51,7 +50,7 @@ The key user flow is:
     -   **Prompt Strategy**: Asks for a specific number of questions on a topic for a grade level. Crucially, it uses `responseMimeType: "application/json"` and a `responseSchema` to ensure the output is valid, parseable JSON.
 -   **`formatWorksheetFromQuestions`**:
     -   **Goal**: Convert approved JSON questions into beautiful, printable HTML.
-    -   **Model**: `gemini-2.5-pro`
+    -   **Model**: `gemini-2.5-flash`
     -   **Prompt Strategy**: Provides the pre-generated questions and a strict set of formatting rules. It heavily emphasizes using Tailwind CSS classes and explicitly mandates dark text colors (e.g., `text-slate-800`) to prevent styling bugs.
 -   **`generateLibraryTopics`**:
     -   **Goal**: Generate creative, diverse topic ideas for the library feature.

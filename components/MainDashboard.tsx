@@ -8,15 +8,24 @@ import { ProfileSetup } from './ProfileSetup';
 import { ProfileSelector } from './ProfileSelector';
 
 export const MainDashboard = () => {
-    const { session, getActiveStudent, selectStudent } = useUser();
-    const [view, setView] = useState<AppView>('parent');
+    const { session, getActiveStudent, selectStudent, clearInitialView } = useUser();
     
-    // Effect to ensure an active student is selected if possible
+    // Capture the initial intent from the session only on the first render.
+    const [initialIntent] = useState(session.initialView);
+    
+    const [view, setView] = useState<AppView>(initialIntent || 'parent');
+    
+    // Effect to handle session setup and cleanup
     useEffect(() => {
+        // Ensure an active student is selected if possible
         if (session.isLoggedIn && session.students.length > 0 && !session.activeStudentId) {
             selectStudent(session.students[0].id);
         }
-    }, [session.isLoggedIn, session.students, session.activeStudentId, selectStudent]);
+        // Clean up the initialView flag from the session after it has been used for navigation.
+        if (session.initialView) {
+            clearInitialView();
+        }
+    }, [session.isLoggedIn, session.students, session.activeStudentId, selectStudent, session.initialView, clearInitialView]);
 
     if (!session.isLoggedIn) {
         return <LandingScreen />;
@@ -34,7 +43,7 @@ export const MainDashboard = () => {
     
     if (!activeStudent) {
         // This can happen briefly while the active student is being set.
-        // Or if the activeId is invalid, ProfileSelector is the best place to fix it.
+        // ProfileSelector is the best place to fix it.
         return <ProfileSelector onProfileSelected={() => setView('parent')} />;
     }
     
@@ -43,7 +52,7 @@ export const MainDashboard = () => {
     }
 
     if (view === 'student') {
-        return <StudentZone student={activeStudent} onSwitchToParent={() => setView('parent')} onSwitchProfile={() => setView('profiles')} />;
+        return <StudentZone student={activeStudent} onSwitchToParent={() => setView('parent')} onSwitchProfile={() => setView('profiles')} startInSetupView={initialIntent === 'student'} />;
     }
 
     return null; // Should not be reached

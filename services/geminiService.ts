@@ -11,9 +11,11 @@ const quizQuestionSchema = {
     properties: {
         question: { type: Type.STRING },
         options: {
-            type: Type.ARRAY,
-            items: { type: Type.STRING },
-            nullable: true,
+            // FIX: Use oneOf to properly define a property that can be an array or null.
+            oneOf: [
+                { type: Type.ARRAY, items: { type: Type.STRING } },
+                { type: Type.NULL }
+            ]
         },
         answer: { type: Type.STRING },
         type: { type: Type.STRING, description: "The type of question, e.g., 'Multiple Choice', 'Short Answer'" },
@@ -36,8 +38,8 @@ export const generateQuizQuestions = async (details: GenerationDetails): Promise
 
             Generate the questions in a JSON array format. Each object should contain:
             - "question": The question text.
-            - "options": An array of possible answers (for Multiple Choice or Matching). For other types, this can be null or empty.
-            - "answer": The correct answer.
+            - "options": An array of possible answers. If the question type is "Multiple Choice" or "Matching", this array MUST contain several non-empty strings. For other types, this can be null.
+            - "answer": The correct answer. If options are provided, the answer must be one of the values from the "options" array.
             - "type": The type of question, which should be "${details.worksheetType}".
             - "explanation": A simple, one or two-sentence explanation for why the correct answer is correct. This is for the student to learn from their mistakes.
             
@@ -83,7 +85,7 @@ export const formatWorksheetFromQuestions = async (
 
         const questionsString = questions.map((q, i) =>
             `${i + 1}. ${q.question}\n` +
-            (q.options ? `   Options: ${q.options.join(', ')}\n` : '') +
+            (q.options && q.options.length > 0 ? `   Options: ${q.options.join(', ')}\n` : '') +
             `   Answer: ${q.answer}\n`
         ).join('\n');
 
@@ -182,5 +184,33 @@ export const generateLibraryTopics = async (gradeLevel: string): Promise<Topic[]
     } catch (error) {
         console.error("Error generating library topics:", error);
         throw new Error("Could not load worksheet ideas at this time. Please try again later.");
+    }
+};
+
+// Function to generate a single, fun topic for a practice quiz.
+export const generateSurpriseTopic = async (gradeLevel: string): Promise<string> => {
+    try {
+        const model = 'gemini-2.5-flash';
+        const prompt = `
+            Generate one fun, surprising, and simple quiz topic suitable for a ${gradeLevel} student.
+            The topic should be engaging for a child. Examples: "Funny Animal Facts", "Outer Space Mysteries", "The World of Dinosaurs", "Magic and Potions".
+            Return only the topic name as a single, clean string. Do not include quotes or any other text.
+        `;
+        
+        const response = await ai.models.generateContent({
+            model,
+            contents: prompt,
+        });
+        
+        const topic = response.text.trim().replace(/"/g, ''); // Clean up response
+        if (!topic) {
+            throw new Error("AI failed to generate a surprise topic.");
+        }
+        return topic;
+
+    } catch (error) {
+        console.error("Error generating surprise topic:", error);
+        // Return a fun fallback topic
+        return "Funny Animal Facts";
     }
 };

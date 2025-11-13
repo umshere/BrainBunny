@@ -1,7 +1,7 @@
 import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import {
     DocumentIcon, ClockIcon, ArrowUpTrayIcon, CameraIcon, XMarkIcon,
-    ArrowPathIcon, AcademicCapIcon, Bars3BottomLeftIcon, BeakerIcon,
+    ArrowPathIcon, AcademicCapIcon, Bars3BottomLeftIcon, MoleculeIcon,
     CalculatorIcon, BuildingLibraryIcon, SparklesIcon, PencilIcon,
     PaintBrushIcon, PuzzlePieceIcon, QuestionMarkCircleIcon, LightBulbIcon
 } from './icons';
@@ -19,7 +19,7 @@ export type GeneratorFormHandle = {
 
 const SUBJECTS = [
     { name: 'Math', icon: <CalculatorIcon /> },
-    { name: 'Science', icon: <BeakerIcon /> },
+    { name: 'Science', icon: <MoleculeIcon /> },
     { name: 'Language Arts', icon: <Bars3BottomLeftIcon /> },
     { name: 'History', icon: <BuildingLibraryIcon /> },
     { name: 'Art', icon: <PaintBrushIcon /> },

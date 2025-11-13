@@ -33,7 +33,7 @@ The parent zone is a powerful content creation hub designed for speed and contro
         -   **Assign as Interactive Quiz:** Instantly add the worksheet to the student's assignment list for on-screen practice.
         -   **Format for Printing:** Convert the questions into a beautifully styled, printable HTML document, complete with an answer key.
 -   **Content Variety:** Generate worksheets for any grade level on any topic, with support for multiple question types like Multiple Choice, Fill-in-the-Blank, and Short Answer.
--   **Adaptive Learning Loop:** The "From Weak Points" feature allows you to generate new worksheets that specifically target the concepts a student has struggled with, creating a personalized learning cycle.
+-   **Adaptive Learning Loop:** The system automatically tracks a student's incorrect answers as "Weak Points." This gives parents clear insight into which topics need more attention, allowing them to create new, targeted worksheets to reinforce those specific concepts.
 -   **Engaging UI:** A polished interface with creative, insightful loading animations makes the creation process enjoyable.
 
 ---

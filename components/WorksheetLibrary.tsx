@@ -3,7 +3,7 @@ import { generateLibraryTopics } from '../services/geminiService';
 import { Topic } from '../types';
 import { useUser } from '../contexts/UserContext';
 import {
-    CalculatorIcon, BeakerIcon, BuildingLibraryIcon, Bars3BottomLeftIcon,
+    CalculatorIcon, MoleculeIcon, BuildingLibraryIcon, Bars3BottomLeftIcon,
     PaintBrushIcon, PuzzlePieceIcon, QuestionMarkCircleIcon, LightBulbIcon
 } from './icons';
 
@@ -13,7 +13,7 @@ type WorksheetLibraryProps = {
 
 const categoryIcons: { [key: string]: React.JSX.Element } = {
     Math: <CalculatorIcon />,
-    Science: <BeakerIcon />,
+    Science: <MoleculeIcon />,
     History: <BuildingLibraryIcon />,
     Language: <Bars3BottomLeftIcon />,
     Art: <PaintBrushIcon />,
