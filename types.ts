@@ -14,10 +14,14 @@ export type WeakPoint = {
 
 export type QuizQuestion = {
     question: string;
-    options?: string[]; // Options are now optional
-    answer: string;
-    type: string; // Added to handle different question formats
+    options?: string[]; // Options for Multiple Choice
+    answer: string | Record<string, string>; // Answer can be a string or a key-value map for Matching
+    type: string; // e.g., 'Multiple Choice', 'Matching'
     explanation?: string; // To show why the answer is correct
+    matchingPairs?: { // Specific structured data for Matching questions
+        prompts: string[];
+        choices: string[];
+    };
 };
 
 export type Assignment = {

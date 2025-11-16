@@ -48,7 +48,55 @@ export const QuizResults = ({ score, totalQuestions, assignment, studentAnswers,
                 <div className="mt-4 max-h-[30vh] overflow-y-auto space-y-3 p-4 bg-slate-50 rounded-lg border">
                     {assignment.questions.map((q, index) => {
                         const studentAnswer = studentAnswers[index];
-                        const isCorrect = studentAnswer && q.answer.trim().toLowerCase() === studentAnswer.trim().toLowerCase();
+                        
+                        const isCorrect = (() => {
+                            if (!studentAnswer) return false;
+                            if (q.type === 'Matching') {
+                                try {
+                                    const correctAnswer = JSON.parse(q.answer as string) as Record<string, string>;
+                                    const studentSelection = JSON.parse(studentAnswer);
+                                    return Object.keys(correctAnswer).length === Object.keys(studentSelection).length &&
+                                           Object.keys(correctAnswer).every(key => correctAnswer[key] === studentSelection[key]);
+                                } catch { return false; }
+                            }
+                            return (q.answer as string).trim().toLowerCase() === studentAnswer.trim().toLowerCase();
+                        })();
+
+                        const renderStudentAnswer = () => {
+                            if (q.type === 'Matching') {
+                                try {
+                                    const selections = JSON.parse(studentAnswer || '{}');
+                                    return Object.entries(selections).map(([key, val]) => (
+                                        <div key={key}>{key} → {val as string}</div>
+                                    ));
+                                } catch { return studentAnswer; }
+                            }
+                            return studentAnswer || 'No answer';
+                        };
+                        
+                        const renderCorrectAnswer = () => {
+                            // FIX: Safely render the correct answer by handling objects and converting them to strings or JSX.
+                            const answer = q.answer;
+                            if (typeof answer === 'object' && answer !== null) {
+                                return Object.entries(answer).map(([key, val]) => (
+                                    <div key={key}>{key} → {val as string}</div>
+                                ));
+                            }
+                            if (typeof answer === 'string') {
+                                try {
+                                    const parsed = JSON.parse(answer);
+                                    if (typeof parsed === 'object' && parsed !== null) {
+                                        return Object.entries(parsed).map(([key, val]) => (
+                                            <div key={key}>{key} → {val as string}</div>
+                                        ));
+                                    }
+                                } catch (e) {
+                                    // Not a JSON string.
+                                }
+                            }
+                            return String(answer);
+                        }
+
                         return (
                             <div key={index} className={`bg-white p-3 rounded-md shadow-sm border-l-4 ${isCorrect ? 'border-green-500' : 'border-red-500'}`}>
                                 <p className="font-semibold text-slate-700">{index + 1}. {q.question}</p>
@@ -58,10 +106,10 @@ export const QuizResults = ({ score, totalQuestions, assignment, studentAnswers,
                                         : <XCircleIcon className="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
                                     }
                                     <div>
-                                        <p className={`font-medium ${isCorrect ? 'text-slate-800' : 'text-red-700 line-through'}`}>
-                                            Your answer: {studentAnswer || 'No answer'}
-                                        </p>
-                                        {!isCorrect && <p className="font-medium text-green-700">Correct answer: {q.answer}</p>}
+                                        <div className={`font-medium ${isCorrect ? 'text-slate-800' : 'text-red-700 line-through'}`}>
+                                            Your answer: {renderStudentAnswer()}
+                                        </div>
+                                        {!isCorrect && <div className="font-medium text-green-700">Correct answer: {renderCorrectAnswer()}</div>}
                                         {!isCorrect && q.explanation && (
                                             <p className="mt-1 text-slate-700 italic">💡 {q.explanation}</p>
                                         )}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Assignment } from '../../types';
+import { Assignment, QuizQuestion } from '../../types';
 import { useUser } from '../../contexts/UserContext';
 import { QuizCard } from './QuizCard';
 import { QuizResults } from './QuizResults';
@@ -37,6 +37,36 @@ const QuizProgressIndicator = ({
     </div>
 );
 
+// Helper function to determine if an answer is correct
+const isAnswerCorrect = (question: QuizQuestion, studentAnswer: string | null): boolean => {
+    if (studentAnswer === null) return false;
+
+    if (question.type === 'Matching') {
+        try {
+            // The correct answer from the AI is a stringified JSON object.
+            const correctAnswer = JSON.parse(question.answer as string) as Record<string, string>;
+            // The student's answer is a JSON string from the QuizCard.
+            const studentSelection = JSON.parse(studentAnswer);
+
+            // Basic check: same number of keys.
+            if (Object.keys(correctAnswer).length !== Object.keys(studentSelection).length) {
+                return false;
+            }
+
+            // Check if every key-value pair matches.
+            return Object.keys(correctAnswer).every(
+                key => correctAnswer[key] === studentSelection[key]
+            );
+        } catch (e) {
+            console.error("Error comparing matching answers:", e);
+            return false;
+        }
+    } else {
+        // Fallback to simple string comparison for all other types.
+        const correctAnswer = question.answer as string;
+        return correctAnswer.trim().toLowerCase() === studentAnswer.trim().toLowerCase();
+    }
+};
 
 export const QuizGame = ({ assignment, onEnd }: QuizGameProps) => {
     const { completeAssignment, getActiveStudent } = useUser();
@@ -120,8 +150,7 @@ export const QuizGame = ({ assignment, onEnd }: QuizGameProps) => {
     const finishQuiz = () => {
         let correctAnswers = 0;
         assignment.questions.forEach((q, index) => {
-            const studentAnswer = studentAnswers[index];
-            if (studentAnswer && q.answer.trim().toLowerCase() === studentAnswer.trim().toLowerCase()) {
+            if (isAnswerCorrect(q, studentAnswers[index])) {
                 correctAnswers++;
             }
         });

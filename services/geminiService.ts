@@ -11,15 +11,20 @@ const quizQuestionSchema = {
     properties: {
         question: { type: Type.STRING },
         options: {
-            // FIX: Use oneOf to properly define a property that can be an array or null.
-            oneOf: [
-                { type: Type.ARRAY, items: { type: Type.STRING } },
-                { type: Type.NULL }
-            ]
+            type: Type.ARRAY,
+            items: { type: Type.STRING }
         },
-        answer: { type: Type.STRING },
-        type: { type: Type.STRING, description: "The type of question, e.g., 'Multiple Choice', 'Short Answer'" },
+        answer: { type: Type.STRING, description: "The correct answer. For 'Matching' questions, this MUST be a stringified JSON object." },
+        type: { type: Type.STRING, description: "The type of question, e.g., 'Multiple Choice', 'Short Answer', 'Matching'" },
         explanation: { type: Type.STRING, description: "A brief, kid-friendly explanation for why the answer is correct." },
+        matchingPairs: {
+            type: Type.OBJECT,
+            description: "For 'Matching' questions, provide the items to be matched.",
+            properties: {
+                prompts: { type: Type.ARRAY, items: { type: Type.STRING } },
+                choices: { type: Type.ARRAY, items: { type: Type.STRING } }
+            }
+        }
     },
     required: ['question', 'answer', 'type', 'explanation'],
 };
@@ -32,19 +37,29 @@ export const generateQuizQuestions = async (details: GenerationDetails): Promise
         const prompt = `
             Create a set of ${details.numQuestions} quiz questions for a ${details.gradeLevel} student.
             The subject is ${details.subject} and the topic is "${details.topic}".
-            The worksheet type should be "${details.worksheetType}".
+            The question type for all questions should be "${details.worksheetType}".
             
             Here are some custom instructions: "${details.customInstructions || 'None'}".
 
-            Generate the questions in a JSON array format. Each object should contain:
-            - "question": The question text.
-            - "options": An array of possible answers. If the question type is "Multiple Choice" or "Matching", this array MUST contain several non-empty strings. For other types, this can be null.
-            - "answer": The correct answer. If options are provided, the answer must be one of the values from the "options" array.
-            - "type": The type of question, which should be "${details.worksheetType}".
+            Generate the questions in a JSON array format. Each object must adhere to the provided schema.
+            - "question": The question text or instruction.
+            - "options": An array of possible answers. This MUST be populated for "Multiple Choice" questions. For other types, it can be an empty array.
+            - "answer": The correct answer.
+            - "type": The question type, which must be "${details.worksheetType}".
             - "explanation": A simple, one or two-sentence explanation for why the correct answer is correct. This is for the student to learn from their mistakes.
+            - "matchingPairs": This object is ONLY for "Matching" questions.
+
+            **Instructions for "Matching" questions:**
+            - The "question" field should be a general instruction, like "Match the capital cities to their countries."
+            - The "matchingPairs" object MUST be populated. It needs two arrays of strings: "prompts" and "choices". The arrays must be of equal length.
+            - The "answer" field for a matching question MUST be a stringified JSON object that maps each prompt from the "prompts" array to its correct choice from the "choices" array. For example: "{\\"USA\\":\\"Washington D.C.\\",\\"France\\":\\"Paris\\"}"
+            
+            **Instructions for "Multiple Choice" questions:**
+            - The "options" array must contain several distinct, non-empty strings.
+            - The "answer" field MUST be a string that exactly matches one of the values in the "options" array.
             
             Ensure the questions are appropriate for the specified grade level and subject.
-            Ensure the "explanation" field is always filled.
+            Ensure the "explanation" field is always filled for every question.
         `;
         
         const response = await ai.models.generateContent({
@@ -67,7 +82,7 @@ export const generateQuizQuestions = async (details: GenerationDetails): Promise
             throw new Error("The AI returned an invalid or empty list of questions.");
         }
 
-        return questions;
+        return questions as QuizQuestion[];
 
     } catch (error) {
         console.error("Error generating quiz questions:", error);
@@ -86,7 +101,8 @@ export const formatWorksheetFromQuestions = async (
         const questionsString = questions.map((q, i) =>
             `${i + 1}. ${q.question}\n` +
             (q.options && q.options.length > 0 ? `   Options: ${q.options.join(', ')}\n` : '') +
-            `   Answer: ${q.answer}\n`
+            (q.type === 'Matching' && q.matchingPairs ? `   Prompts: ${q.matchingPairs.prompts.join(', ')}\n   Choices: ${q.matchingPairs.choices.join(', ')}\n` : '') +
+            `   Answer: ${typeof q.answer === 'object' ? JSON.stringify(q.answer) : q.answer}\n`
         ).join('\n');
 
         const prompt = `
@@ -94,7 +110,7 @@ export const formatWorksheetFromQuestions = async (
             The topic is "${details.topic}". Use Tailwind CSS classes for styling. Make it clean, kid-friendly, and professional.
             
             The final output should be a JSON object with two keys: "worksheet" and "answerKey".
-            - The "worksheet" value should be an HTML string containing the worksheet with places for the student to write their name and date, the questions, and answer lines. DO NOT include the answers in the worksheet. Use dark text colors like text-slate-800.
+            - The "worksheet" value should be an HTML string containing the worksheet with places for the student to write their name and date, the questions, and answer lines. DO NOT include the answers in the worksheet. Use dark text colors like text-slate-800. For matching questions, create two columns for the student to draw lines between.
             - The "answerKey" value should be a separate HTML string, clearly marked as an "Answer Key", showing the questions and their correct answers.
             - Use a div with class "p-8 max-w-4xl mx-auto" as the main container for both.
             - Use classes like "text-2xl font-bold mb-4" for headers, "space-y-4" for question lists, etc.

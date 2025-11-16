@@ -25,7 +25,35 @@ export const QuestionReview = ({ questions, onRegenerate, onAssign, onFormat, on
                 {questions.map((q, index) => (
                     <div key={index} className="bg-white p-3 rounded-md shadow-sm">
                         <p className="font-semibold text-slate-700">{index + 1}. {q.question}</p>
-                        {q.options && q.options.length > 0 ? (
+                        
+                        {q.type === 'Matching' && q.matchingPairs ? (
+                            <div className="mt-2 text-sm text-slate-600 grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                                <div>
+                                    <h4 className="font-semibold underline">Prompts</h4>
+                                    <ul className="list-disc pl-5">
+                                        {q.matchingPairs.prompts.map(p => <li key={p}>{p}</li>)}
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold underline">Choices</h4>
+                                    <ul className="list-disc pl-5">
+                                        {q.matchingPairs.choices.map(c => <li key={c}>{c}</li>)}
+                                    </ul>
+                                </div>
+                                <div className="col-span-full mt-2">
+                                    <p className="text-green-600 font-semibold">
+                                        Answer: {(() => {
+                                            try {
+                                                const answerMap = JSON.parse(q.answer as string);
+                                                return Object.entries(answerMap).map(([key, val]) => `${key} → ${val}`).join(', ');
+                                            } catch {
+                                                return q.answer as string;
+                                            }
+                                        })()}
+                                    </p>
+                                </div>
+                            </div>
+                        ) : q.options && q.options.length > 0 ? (
                             <ul className="mt-2 text-sm text-slate-600 grid grid-cols-1 sm:grid-cols-2 gap-x-4">
                                 {q.options.map(opt => (
                                     <li key={opt} className={`${opt === q.answer ? 'font-bold text-green-600' : ''}`}>
@@ -34,7 +62,7 @@ export const QuestionReview = ({ questions, onRegenerate, onAssign, onFormat, on
                                 ))}
                             </ul>
                         ) : (
-                            <p className="mt-2 text-sm text-green-600 font-semibold">Answer: {q.answer}</p>
+                            <p className="mt-2 text-sm text-green-600 font-semibold">Answer: {q.answer as string}</p>
                         )}
                     </div>
                 ))}
