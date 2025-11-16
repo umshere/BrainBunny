@@ -8,85 +8,89 @@ To create an adaptive, AI-powered homework platform that makes learning fun and 
 
 ---
 
-## 2. Current State (Phase 0 Complete)
+## 2. Bridging the Gap: From Vision to Reality
 
-The application is a fully-functional, client-side "guest mode" experience built with React, TypeScript, and the Google Gemini API. It demonstrates the core product loop and key features.
+**The Core Truth:** The current application is a powerful parent-driven tool, but it does not yet fulfill the tagline's promise of autonomous adaptation. The parent is the adaptive engine, not the software.
 
-### Key Implemented Features:
+To achieve our vision, we must evolve the system from a manual worksheet generator into a truly intelligent tutor. This requires addressing three fundamental gaps:
 
--   **✅ Full Guest Mode:** No login required. Session is persisted in `localStorage`.
--   **✅ Multi-Student Management:** Parents can create and manage profiles for multiple children in a single session.
--   **✅ Two-Step Worksheet Generation:**
-    1.  **Instant Question Generation:** Fast, data-only JSON generation for immediate parental review.
-    2.  **On-Demand Formatting:** Approved questions can be formatted into a beautiful, printable HTML worksheet.
--   **✅ Interactive Student Assignments:** Worksheets can be assigned as on-screen quizzes.
--   **✅ Dynamic Quiz Engine:** The student quiz card dynamically adapts to support multiple question types (Multiple Choice, Fill-in-the-Blank, etc.).
--   **✅ Adaptive Learning Loop:** The system tracks a student's "Weak Points" from incorrect answers, allowing parents to generate targeted practice worksheets.
--   **✅ Accessibility & UX Polish:**
-    -   Adjustable font size in quizzes.
-    -   Gamified quiz feedback and "lives" system.
-    -   Creative, insightful loading animations instead of generic spinners.
+1.  **Lack of Autonomous Action:** The system currently identifies "Weak Points" but takes no action. It is a passive reporting tool. **Solution: Automate the Feedback Loop.**
+2.  **Lack of Dynamic Change:** The system delivers static, pre-configured quizzes. It does not alter its strategy based on real-time student performance. **Solution: Implement Dynamic Difficulty Adjustment.**
+3.  **Lack of a Connected Path:** Assignments are isolated events. A student completes a quiz, and the journey ends. There is no logical progression. **Solution: Build Learning Paths.**
+
+The following development phases are structured to solve these problems directly.
 
 ---
 
-## 3. Future Development Phases
+## 3. Version 1.0.0 (The Foundation - July 2024)
 
-### Phase 1: Backend & User Authentication (The Foundation)
+The application is a fully-functional, client-side "guest mode" experience. It establishes the core components and demonstrates the manual adaptive loop.
 
-**Goal:** Transition from a session-based guest model to a persistent, account-based system.
+### Key Implemented Features:
+
+-   **✅ Full Guest Mode:** Session persisted in `localStorage`.
+-   **✅ Multi-Student Management:** Parents can manage multiple profiles.
+-   **✅ Two-Step Worksheet Generation:**
+    1.  **Instant Question Generation:** Fast JSON generation for review.
+    2.  **On-Demand Formatting:** Format approved questions for printing.
+-   **✅ Interactive Student Assignments:** Worksheets can be assigned as on-screen quizzes.
+-   **✅ Dynamic Quiz Engine:** UI adapts to multiple question types.
+-   **✅ Manual Adaptive Loop:** The system tracks "Weak Points" for parents to act on.
+-   **✅ Accessibility & UX Polish:** Adjustable font size, gamified feedback, and custom loading animations.
+
+---
+
+## 4. Future Development Phases
+
+### Phase 1: Building the Foundation for Intelligence
+
+**Goal:** Transition from a session-based guest model to a persistent, account-based system. This is a prerequisite for all future intelligence.
 
 -   **[ ] Backend Development:** Build a Node.js (Express) or FastAPI backend.
--   **[ ] Database Setup:** Implement a Firestore or PostgreSQL database using the schema defined below.
+-   **[ ] Database Setup:** Implement a Firestore or PostgreSQL database.
 -   **[ ] User Authentication:** Integrate Firebase Authentication for Google Sign-In and email/password accounts.
--   **[ ] API Development:** Create API endpoints to manage users, students, questions, and progress.
--   **[ ] Migration:** Migrate the frontend to use API calls instead of `localStorage` for all data.
+-   **[ ] API Development:** Create API endpoints to manage users, students, assignments, and progress.
+-   **[ ] Frontend Migration:** Migrate the frontend to use API calls instead of `localStorage` for all data.
 
-**Firestore Schema:**
-```
-/users/{id}
-  name, email, plan, credits, totalInvites, referredBy
-/students/{userId}/{studentId}
-  name, grade, avatar, weakPoints[]
-/assignments/{studentId}/{assignmentId}
-  topic, questions[], status, score, dateAssigned, dateCompleted
-/transactions/{userId}/{transactionId}
-  amount, creditsPurchased, paymentMethod, timestamp
-```
+### Phase 2: Implementing True Adaptation
 
-### Phase 2: Monetization & Growth
+**Goal:** Build the core intelligent tutoring system that fulfills the product's tagline.
 
-**Goal:** Implement the credit-based economy and referral system.
+-   **[ ] Task 1: Automate the Feedback Loop (Solves Gap #1)**
+    -   When a student answers incorrectly, the system must automatically generate a new, targeted micro-assignment based on that specific "Weak Point".
+    -   This new assignment is added directly to the student's queue without parent intervention.
+-   **[ ] Task 2: Implement Dynamic Difficulty Adjustment (Solves Gap #2)**
+    -   Track student mastery on a per-topic basis.
+    -   A student's score on a topic must directly influence the difficulty (simpler vocabulary, easier numbers, more hints) of the next auto-generated assignment on that same topic.
+-   **[ ] Task 3: Build Learning Paths (Solves Gap #3)**
+    -   Define a curriculum graph with prerequisite topics (e.g., "single-digit addition" must be mastered before "double-digit addition").
+    -   Create a system where students progress through this defined path, unlocking new topics as they demonstrate mastery.
+
+### Phase 3: Monetization & Growth
+
+**Goal:** Implement the credit-based economy and referral system to support the platform.
 
 -   **[ ] Credit System Logic:** Implement backend logic for tracking, spending, and earning credits.
-    -   20 free credits on signup.
-    -   1 worksheet = 1 credit.
--   **[ ] Payment Integration:** Integrate Stripe and the Apple Pay (Payment Request API) for purchasing credit packs.
--   **[ ] Referral System:**
-    -   Generate unique referral codes for users.
-    -   Track successful invites.
-    -   Implement rewards: +2 credits per invite, 1-week Premium Trial for 5 invites.
--   **[ ] Premium Tier:** Develop a subscription model for unlimited access and advanced features.
+-   **[ ] Payment Integration:** Integrate Stripe for purchasing credit packs.
+-   **[ ] Referral System:** Generate unique referral codes and implement rewards.
 
-### Phase 3: Advanced AI & Gamification
+### Phase 4: Advanced AI & Gamification
 
-**Goal:** Enhance the learning experience with more advanced AI capabilities and engaging game mechanics.
+**Goal:** Enhance the now-adaptive learning experience with more advanced AI capabilities and engaging game mechanics.
 
 -   **[ ] AI-Powered Chatbot:** Create a parent/teacher assistant for reports and tips.
 -   **[ ] Conversational Voice Apps:** Implement a "Talk to BrainyBunny" mode using the Gemini Live API for oral quizzes.
 -   **[ ] Visual Enhancements:**
     -   Use `gemini-2.5-flash-image` to add illustrations to story problems.
-    -   Use Veo to create short animated learning clips or weekly progress summaries.
--   **[ ] Image Analysis:** Develop a feature to auto-grade worksheets uploaded from photos.
+    -   Use Veo to create short animated learning clips.
 -   **[ ] Gamification & Rewards:**
-    -   **[ ]** Implement an XP system (streaks, badges).
-    -   **[ ]** **(New)** Develop a simple reward mini-game (e.g., "Dino Run" style) unlocked by exceptional quiz scores.
+    -   **[ ]** Implement an XP system (streaks, badges) based on progress through the Learning Path.
+    -   **[ ]** Develop a reward mini-game unlocked by exceptional quiz scores.
 
-### Phase 4: Expansion & Platform Growth
+### Phase 5: Expansion & Platform Growth
 
 **Goal:** Expand the platform's reach and capabilities for educational institutions.
 
 -   **[ ] Smart Reports:** Enhance analytics dashboards with charts and deeper insights.
--   **[ ] Geo-Assignments:** Use Google Maps data for geography-based questions.
--   **[ ] Mobile App:** Develop a PWA or Flutter wrapper for a native mobile experience.
 -   **[ ] Classroom Management:** Build features for teachers to manage multiple students.
 -   **[ ] School API:** Create an API for schools and other educational platforms to integrate with BrainyBunny.

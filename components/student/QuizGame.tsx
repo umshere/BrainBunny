@@ -1,69 +1,126 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Assignment } from '../../types';
 import { useUser } from '../../contexts/UserContext';
 import { QuizCard } from './QuizCard';
 import { QuizResults } from './QuizResults';
+import { ArrowUturnLeftIcon, CheckCircleIcon } from '../icons';
 
+// FIX: Define QuizGameProps to resolve the type error.
 type QuizGameProps = {
     assignment: Assignment;
     onEnd: () => void;
 };
 
+// New component to show dots for each question, indicating progress and allowing navigation.
+const QuizProgressIndicator = ({
+    count,
+    activeIndex,
+    studentAnswers,
+    onIndicatorClick
+}: {
+    count: number,
+    activeIndex: number,
+    studentAnswers: (string | null)[],
+    onIndicatorClick: (index: number) => void
+}) => (
+    <div className="flex justify-center items-center gap-2 mb-4 p-2 bg-white/50 rounded-full">
+        {Array.from({ length: count }).map((_, i) => (
+            <button
+                key={i}
+                onClick={() => onIndicatorClick(i)}
+                className={`w-8 h-2 rounded-full transition-all duration-300 
+                    ${i === activeIndex ? 'bg-sky-500' : 'bg-slate-300 hover:bg-slate-400'} 
+                    ${studentAnswers[i] !== null ? '!bg-green-500' : ''}`}
+                aria-label={`Go to question ${i + 1}`}
+            />
+        ))}
+    </div>
+);
+
+
 export const QuizGame = ({ assignment, onEnd }: QuizGameProps) => {
     const { completeAssignment, getActiveStudent } = useUser();
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [studentAnswers, setStudentAnswers] = useState<(string | null)[]>([]);
     const [isFinished, setIsFinished] = useState(false);
     const [score, setScore] = useState(0);
-    const [lives, setLives] = useState(3);
-    const [fontSize, setFontSize] = useState(100); // Percentage
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [cardWidth, setCardWidth] = useState(500); // For responsiveness
+    const [fontSize, setFontSize] = useState(30); // For question text size, default 30px
 
+    const scrollerRef = useRef<HTMLDivElement>(null);
+    
     const activeStudent = getActiveStudent();
 
     useEffect(() => {
-        // Pre-fill answers array with nulls and reset state on new assignment
+        // Dynamic card width for responsiveness
+        const calculateCardWidth = () => {
+            const viewportWidth = window.innerWidth;
+            // Subtract padding and some margin for a better fit on mobile
+            const newWidth = Math.min(viewportWidth - 48, 500);
+            setCardWidth(newWidth);
+        };
+        calculateCardWidth();
+        window.addEventListener('resize', calculateCardWidth);
+        
+        return () => window.removeEventListener('resize', calculateCardWidth);
+    }, []);
+
+    useEffect(() => {
+        // Reset state when a new assignment is loaded
         setStudentAnswers(Array(assignment.questions.length).fill(null));
-        setCurrentQuestionIndex(0);
         setIsFinished(false);
         setScore(0);
-        setLives(3);
-        setFontSize(100);
+        setActiveIndex(0);
+        if (scrollerRef.current) {
+            scrollerRef.current.scrollLeft = 0;
+        }
     }, [assignment]);
 
-    const handleAnswerSelected = (answer: string) => {
-        const newAnswers = [...studentAnswers];
-        newAnswers[currentQuestionIndex] = answer;
-        setStudentAnswers(newAnswers);
-
-        const isCorrect = questionIsCorrect(answer);
-        if (!isCorrect) {
-            if (lives - 1 <= 0) {
-                setLives(0);
-                finishQuiz(newAnswers, true);
-                return;
+    const handleScroll = useCallback(() => {
+        if (scrollerRef.current) {
+            const { scrollLeft } = scrollerRef.current;
+            const newIndex = cardWidth > 0 ? Math.round(scrollLeft / cardWidth) : 0;
+            if (newIndex !== activeIndex) {
+                setActiveIndex(newIndex);
             }
-            setLives(lives - 1);
+        }
+    }, [activeIndex, cardWidth]);
+
+    useEffect(() => {
+        const scroller = scrollerRef.current;
+        if (scroller) {
+            // A simple debounce to avoid excessive re-renders on fast scrolls
+            let debounceTimer: number;
+            const debouncedHandler = () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = window.setTimeout(() => {
+                    handleScroll();
+                }, 50);
+            };
+            scroller.addEventListener('scroll', debouncedHandler, { passive: true });
+            return () => scroller.removeEventListener('scroll', debouncedHandler);
+        }
+    }, [handleScroll]);
+
+    const handleIndicatorClick = (index: number) => {
+        if (scrollerRef.current) {
+            scrollerRef.current.scrollTo({
+                left: index * cardWidth,
+                behavior: 'smooth'
+            });
         }
     };
 
-    const questionIsCorrect = (answer: string): boolean => {
-        const currentQuestion = assignment.questions[currentQuestionIndex];
-        // Case-insensitive and trims whitespace for text-based answers
-        return currentQuestion.answer.trim().toLowerCase() === answer.trim().toLowerCase();
+    const handleAnswerSelected = (questionIndex: number, answer: string) => {
+        const newAnswers = [...studentAnswers];
+        newAnswers[questionIndex] = answer;
+        setStudentAnswers(newAnswers);
     };
 
-    const advanceToNextQuestion = () => {
-         if (currentQuestionIndex < assignment.questions.length - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-        } else {
-            finishQuiz(studentAnswers, false);
-        }
-    };
-
-    const finishQuiz = (finalAnswers: (string | null)[], ranOutOfLives: boolean) => {
+    const finishQuiz = () => {
         let correctAnswers = 0;
         assignment.questions.forEach((q, index) => {
-            const studentAnswer = finalAnswers[index];
+            const studentAnswer = studentAnswers[index];
             if (studentAnswer && q.answer.trim().toLowerCase() === studentAnswer.trim().toLowerCase()) {
                 correctAnswers++;
             }
@@ -71,50 +128,122 @@ export const QuizGame = ({ assignment, onEnd }: QuizGameProps) => {
         setScore(correctAnswers);
 
         if (activeStudent && assignment.id.startsWith('as_')) { // Only save permanent assignments
-             completeAssignment(activeStudent.id, assignment.id, correctAnswers, finalAnswers);
+            completeAssignment(activeStudent.id, assignment.id, correctAnswers, studentAnswers);
         }
         setIsFinished(true);
     };
-    
+
     const handleRestart = () => {
-        setCurrentQuestionIndex(0);
+        // Reset state for a new attempt
         setStudentAnswers(Array(assignment.questions.length).fill(null));
         setIsFinished(false);
         setScore(0);
-        setLives(3);
+        setActiveIndex(0);
+        if (scrollerRef.current) {
+            scrollerRef.current.scrollLeft = 0;
+        }
     };
+    
+    const allAnswered = studentAnswers.every(a => a !== null);
+    
+    const questionCount = assignment.questions.length;
 
-    const currentQuestion = assignment.questions[currentQuestionIndex];
-
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-sky-100 to-purple-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl">
-                {!isFinished ? (
-                    currentQuestion && (
-                        // FIX: Removed redundant key prop. The QuizCard component internally resets its state via useEffect when the question prop changes.
-                        <QuizCard
-                            question={currentQuestion}
-                            questionNumber={currentQuestionIndex + 1}
-                            totalQuestions={assignment.questions.length}
-                            onAnswerSelected={handleAnswerSelected}
-                            onNextQuestion={advanceToNextQuestion}
-                            lives={lives}
-                            fontSize={fontSize}
-                            onFontSizeChange={setFontSize}
-                        />
-                    )
-                ) : (
+    if (isFinished) {
+         return (
+            <div className="min-h-screen bg-gradient-to-br from-sky-100 to-purple-100 flex items-center justify-center p-4">
+                <div className="w-full max-w-2xl">
                     <QuizResults
                         score={score}
-                        totalQuestions={assignment.questions.length}
+                        totalQuestions={questionCount}
                         assignment={assignment}
                         studentAnswers={studentAnswers}
                         onRestart={handleRestart}
                         onEnd={onEnd}
-                        ranOutOfLives={lives <= 0}
+                        ranOutOfLives={false} // lives system removed for this UI
                     />
-                )}
+                </div>
             </div>
+         )
+    }
+
+    return (
+        <div 
+            className="min-h-screen bg-gradient-to-br from-sky-100 to-purple-100 flex flex-col items-center justify-center p-4 quiz-container overflow-hidden" 
+            style={{
+                '--card-count': questionCount,
+                '--card-width': `${cardWidth}px`,
+                '--active': activeIndex
+            } as React.CSSProperties}
+        >
+             <div className="w-full max-w-4xl mx-auto flex flex-col h-full">
+                <div className="flex justify-between items-center mb-2 px-4 flex-shrink-0">
+                    <h2 className="text-xl font-bold text-slate-700 truncate pr-2">{assignment.topic}</h2>
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        {/* Font size control */}
+                        <div className="hidden sm:flex items-center gap-2 bg-white/50 p-1.5 rounded-lg">
+                            <span className="text-xs font-semibold text-slate-600">Aa</span>
+                            <input 
+                                type="range" 
+                                min="24" 
+                                max="40" 
+                                step="2"
+                                value={fontSize} 
+                                onChange={(e) => setFontSize(Number(e.target.value))}
+                                className="w-24"
+                                aria-label="Adjust question font size"
+                            />
+                             <span className="text-lg font-semibold text-slate-600">Aa</span>
+                        </div>
+                        <button 
+                            onClick={onEnd} 
+                            className="flex items-center gap-2 bg-white/50 hover:bg-white text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors shadow-sm flex-shrink-0"
+                            aria-label="Exit quiz"
+                        >
+                            <ArrowUturnLeftIcon className="w-5 h-5" />
+                            <span className="hidden sm:inline">Exit Quiz</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div className="flex-shrink-0">
+                    <QuizProgressIndicator 
+                        count={questionCount} 
+                        activeIndex={activeIndex} 
+                        studentAnswers={studentAnswers} 
+                        onIndicatorClick={handleIndicatorClick}
+                    />
+                </div>
+
+                <div ref={scrollerRef} className="quiz-scroller flex-grow">
+                    <div className="card-stack">
+                        {assignment.questions.map((q, i) => (
+                            <div key={`${assignment.id}-${i}`} className="question-card-wrapper">
+                                <QuizCard
+                                    question={q}
+                                    questionNumber={i + 1}
+                                    totalQuestions={questionCount}
+                                    onAnswerSelected={(answer) => handleAnswerSelected(i, answer)}
+                                    studentAnswer={studentAnswers[i]}
+                                    fontSize={fontSize}
+                                    style={{ '--i': i } as React.CSSProperties}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                
+                <div className="text-center mt-6 flex-shrink-0 h-16">
+                    {allAnswered && (
+                         <button 
+                            onClick={finishQuiz} 
+                            className="flex items-center gap-2 mx-auto bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-transform hover:scale-105 shadow-lg animate-fade-in"
+                        >
+                            <CheckCircleIcon className="w-6 h-6" />
+                            All Done! See My Score
+                        </button>
+                    )}
+                </div>
+             </div>
         </div>
     );
 };

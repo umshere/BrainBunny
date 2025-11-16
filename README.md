@@ -16,9 +16,13 @@ For kids, it keeps learning fun, achievable, and full of discovery. 🐰
 
 In essence: BrainyBunny isn’t just an AI homework generator — it’s a gentle, growing companion for every learner and family.
 
-BrainyBunny is a modern web application designed to help parents and educators create personalized, engaging homework for children. It leverages the Google Gemini API to generate a wide variety of educational content and provides an interactive platform for students to practice and learn.
+---
 
-The entire application runs in a **full-featured guest mode**, allowing immediate access without needing an account. All session data, including multiple student profiles, is conveniently saved in your browser.
+## Our Journey: Vision vs. Reality
+
+The current version of BrainyBunny is a powerful **parent-driven adaptive tool**. It provides parents with the features needed to personalize learning, track weak points, and manually create targeted assignments. This is the essential foundation.
+
+However, our ultimate vision—a system that **autonomously adapts** to the learner without manual intervention—is the next major milestone. The journey from a powerful tool to a truly intelligent tutor is our core focus. For a detailed breakdown of how we plan to achieve this, see our [**Product Roadmap**](./ROADMAP.md).
 
 ---
 

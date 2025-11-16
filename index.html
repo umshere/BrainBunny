@@ -47,41 +47,62 @@
         animation: fadeInDown 0.5s ease-out forwards;
       }
       
-      /* Quiz Card Flip Animation */
-      .quiz-card-inner {
-        position: relative;
+      /* New Card Stack Scroller styles */
+      .quiz-container {
+        perspective: 2000px;
+      }
+
+      .quiz-scroller {
         width: 100%;
+        height: 600px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none; /* Firefox */
+      }
+      .quiz-scroller::-webkit-scrollbar {
+        display: none; /* Safari and Chrome */
+      }
+
+      .card-stack {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
         height: 100%;
-        text-align: center;
-        transition: transform 0.6s;
+        padding-left: calc(50% - var(--card-width) / 2);
+        padding-right: calc(50% - var(--card-width) / 2);
         transform-style: preserve-3d;
       }
 
-      .quiz-card.flipped .quiz-card-inner {
-        transform: rotateY(180deg);
+      .question-card-wrapper {
+        width: var(--card-width);
+        min-width: var(--card-width);
+        height: 95%; /* A bit smaller than container */
+        scroll-snap-align: center;
+        scroll-snap-stop: always;
+        padding: 0 1rem; /* Spacing between cards */
+        box-sizing: border-box;
       }
 
-      .quiz-card-front,
-      .quiz-card-back {
-        position: absolute;
+      .question-card {
         width: 100%;
         height: 100%;
-        -webkit-backface-visibility: hidden; /* Safari */
-        backface-visibility: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 1.5rem;
-        border-radius: 1.5rem; /* 24px */
-      }
+        border-radius: 1.5rem;
+        background: white;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transition: transform 0.4s ease, opacity 0.4s ease, filter 0.4s ease;
+        position: relative;
+        --abs-offset: max(var(--i) - var(--active), var(--active) - var(--i));
 
-      .quiz-card-front {
-        justify-content: center;
-      }
-      
-      .quiz-card-back {
-        transform: rotateY(180deg);
-        justify-content: flex-start; /* FIX: Align content to the top */
+        transform:
+          rotateY(calc((var(--i) - var(--active)) * 5deg))
+          scale(calc(1 - var(--abs-offset) * 0.15))
+          translateZ(calc(var(--abs-offset) * -120px))
+          translateX(calc((var(--i) - var(--active)) * 20px));
+        
+        filter: blur(calc(var(--abs-offset) * 1px));
+        opacity: calc(1 - var(--abs-offset) * 0.2);
+        z-index: calc(var(--card-count) - var(--abs-offset));
       }
       
       /* Heart animation */

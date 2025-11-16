@@ -11,27 +11,27 @@ export const LandingScreen = () => {
             <main className="flex-grow flex flex-col items-center justify-center p-4 text-center">
                 
                 {/* Brand Vision Section */}
-                <div className="max-w-3xl mx-auto mb-12">
-                    <BrainyBunnyIcon className="w-20 h-20 mx-auto text-amber-500" />
-                    <h1 className="mt-4 text-4xl md:text-5xl font-bold text-slate-800 tracking-tight">
+                <div className="max-w-3xl mx-auto mb-6 md:mb-8">
+                    <BrainyBunnyIcon className="w-16 h-16 md:w-20 md:h-20 mx-auto text-amber-500" />
+                    <h1 className="mt-4 text-3xl md:text-5xl font-bold text-slate-800 tracking-tight">
                         Homework that adapts to your child,
                         <br />
                         <span className="text-amber-500">not the other way around.</span>
                     </h1>
-                    <p className="mt-6 text-lg text-slate-600 max-w-2xl mx-auto">
+                    <p className="mt-4 md:mt-6 text-base md:text-lg text-slate-600 max-w-2xl mx-auto">
                         BrainyBunny transforms homework into a personalized growth journey that evolves with your learner, turning practice into a fun and achievable adventure.
                     </p>
-                    <p className="mt-4 font-semibold text-sky-600">
+                    <p className="mt-4 text-sm md:text-base font-semibold text-sky-600">
                         Are you a student? Jump right into a practice quiz!
                     </p>
                 </div>
 
                 {/* Login Card */}
                 <div className="w-full max-w-sm">
-                    <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200">
-                        <h2 className="text-xl font-bold text-slate-700 mb-6">Ready to Start?</h2>
+                    <div className="bg-white p-6 rounded-2xl shadow-xl border border-slate-200">
+                        <h2 className="text-xl font-bold text-slate-700 mb-4">Ready to Start?</h2>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             <button
                                 onClick={() => loginAsGuest('student')}
                                 className="w-full flex items-center justify-center p-3 bg-sky-500 hover:bg-sky-600 rounded-lg transition-all font-bold text-white shadow-lg hover:shadow-xl transform hover:scale-105"
@@ -40,7 +40,7 @@ export const LandingScreen = () => {
                                 Start a Quick Practice
                             </button>
 
-                            <div className="relative my-4">
+                            <div className="relative my-3">
                                 <div className="absolute inset-0 flex items-center">
                                     <div className="w-full border-t border-slate-300" />
                                 </div>
