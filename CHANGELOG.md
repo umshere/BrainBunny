@@ -25,4 +25,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 -   **Mobile Responsiveness:** Improved layout and prevented scrolling issues on the landing page and quiz screen for smaller devices.
--   **UI Alignment:** Corrected text alignment in the quiz feedback/explanation box.
+-   **UI Alignment:** Re-aligned the quiz feedback text to be correctly centered, fixing a persistent alignment issue.

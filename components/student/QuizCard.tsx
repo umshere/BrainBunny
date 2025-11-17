@@ -207,61 +207,74 @@ export const QuizCard = ({ question, questionNumber, totalQuestions, onAnswerSel
 
     return (
         <div className="question-card flex flex-col p-6 overflow-hidden" style={style}>
-            <div className="w-full flex justify-between items-center text-slate-500 mb-4 flex-shrink-0">
-                <span className="font-bold text-sm bg-slate-100 py-1 px-3 rounded-full">
-                    {questionNumber} / {totalQuestions}
-                </span>
-                <span className="font-semibold text-xs text-slate-400">{question.type}</span>
-            </div>
+            {/* This container grows and allows the question area to scroll, preventing overflow */}
+            <div className="flex-grow flex flex-col overflow-hidden">
+                {/* --- HEADER --- */}
+                <div className="w-full flex justify-between items-center text-slate-500 mb-4 flex-shrink-0">
+                    <span className="font-bold text-sm bg-slate-100 py-1 px-3 rounded-full">
+                        {questionNumber} / {totalQuestions}
+                    </span>
+                    <span className="font-semibold text-xs text-slate-400">{question.type}</span>
+                </div>
 
-            <div className="flex-grow flex items-center justify-center overflow-y-auto p-2">
-                <p
-                    className="font-bold text-slate-800 text-center"
-                    style={{ fontSize: `${fontSize}px`, lineHeight: 1.2 }}
-                >
-                    {question.question}
-                </p>
+                {/* --- QUESTION AREA (Scrollable) --- */}
+                <div className="flex-grow flex items-center justify-center overflow-y-auto p-2">
+                    <p
+                        className="font-bold text-slate-800 text-center"
+                        style={{ fontSize: `${fontSize}px`, lineHeight: 1.2 }}
+                    >
+                        {question.question}
+                    </p>
+                </div>
             </div>
+            
+            {/* --- BOTTOM SECTION (Answers & Feedback) --- */}
+            <div className="flex-shrink-0 w-full pt-4">
+                <div className="w-full">
+                    {renderAnswerOptions()}
+                </div>
+                
+                {!isAnswered && (
+                    <div className="mt-4 p-3 h-24 flex items-center justify-center">
+                        <span className="text-4xl text-sky-400 animate-pulse">&#x2190;</span>
+                    </div>
+                )}
 
-            <div className="w-full mt-4 flex-shrink-0">
-                {renderAnswerOptions()}
-            </div>
-
-            {isAnswered && (
-                 <div className="mt-4 text-left p-3 rounded-lg border-2 animate-fade-in-down flex-shrink-0
-                    ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}
-                 ">
-                     {!isCorrect && (
-                         <p className="text-slate-700 text-sm">
-                            The correct answer is: <span className="font-bold">
-                                {(() => {
-                                    // FIX: Safely render the answer by checking if it's an object and formatting it to a string.
-                                    const answer = question.answer;
-                                    if (typeof answer === 'object' && answer !== null) {
-                                        return Object.entries(answer).map(([key, val]) => `${key}: ${val}`).join('; ');
-                                    }
-                                    if (typeof answer === 'string') {
-                                        try {
-                                            const parsed = JSON.parse(answer);
-                                            if (typeof parsed === 'object' && parsed !== null) {
-                                                return Object.entries(parsed).map(([key, val]) => `${key}: ${val}`).join('; ');
-                                            }
-                                        } catch (e) {
-                                            // Not a JSON string, return as is.
+                {isAnswered && (
+                    <div className={`mt-4 p-3 rounded-lg border-2 animate-fade-in-down
+                        ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}
+                    `}>
+                        {!isCorrect && (
+                            <p className="text-slate-700 text-sm text-center">
+                                The correct answer is: <span className="font-bold">
+                                    {(() => {
+                                        const answer = question.answer;
+                                        if (typeof answer === 'object' && answer !== null) {
+                                            return Object.entries(answer).map(([key, val]) => `${key}: ${val}`).join('; ');
                                         }
-                                    }
-                                    return String(answer);
-                                })()}
-                            </span>
-                         </p>
-                     )}
-                      {question.explanation && (
-                         <p className={`mt-1 text-sm ${isCorrect ? 'text-slate-600' : 'text-slate-700'}`}>
-                             💡 {question.explanation}
-                         </p>
-                     )}
-                 </div>
-            )}
+                                        if (typeof answer === 'string') {
+                                            try {
+                                                const parsed = JSON.parse(answer);
+                                                if (typeof parsed === 'object' && parsed !== null) {
+                                                    return Object.entries(parsed).map(([key, val]) => `${key}: ${val}`).join('; ');
+                                                }
+                                            } catch (e) {
+                                                // Not a JSON string, return as is.
+                                            }
+                                        }
+                                        return String(answer);
+                                    })()}
+                                </span>
+                            </p>
+                        )}
+                        {question.explanation && (
+                            <p className={`mt-1 text-sm text-center ${isCorrect ? 'text-slate-600' : 'text-slate-700'}`}>
+                                💡 {question.explanation}
+                            </p>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

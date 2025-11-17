@@ -75,7 +75,7 @@ export const QuizGame = ({ assignment, onEnd }: QuizGameProps) => {
     const [score, setScore] = useState(0);
     const [activeIndex, setActiveIndex] = useState(0);
     const [cardWidth, setCardWidth] = useState(500); // For responsiveness
-    const [fontSize, setFontSize] = useState(30); // For question text size, default 30px
+    const [fontSize, setFontSize] = useState(26); // For question text size, default 26px
 
     const scrollerRef = useRef<HTMLDivElement>(null);
     
@@ -213,7 +213,7 @@ export const QuizGame = ({ assignment, onEnd }: QuizGameProps) => {
                             <span className="text-xs font-semibold text-slate-600">Aa</span>
                             <input 
                                 type="range" 
-                                min="24" 
+                                min="16" 
                                 max="40" 
                                 step="2"
                                 value={fontSize} 
